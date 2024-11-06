@@ -1,7 +1,7 @@
 <html>
 <!-- Adapted from the people.html UI design -->
 <head>
-	<title>Artists</title>
+	<title>Songs</title>
 	<link href="style.css" rel="stylesheet" type="text/css" />
 	<script language="JavaScript">
 	function showform(dowhat) {
@@ -37,19 +37,19 @@
 		}
 	}
 
-	function newArtist() {
+	function newSong() {
 		showform('insert');
 	}
 
-	function updateArtist(pid) {
+	function updateSong(pid) {
 		showform('update');
 	}
 
-	function deleteArtist(pid) {
+	function deleteSong(pid) {
 		showform('delete');
 	}
 
-	function browseArtist() {
+	function browseSong() {
 		showform('browse');
 	}
 
@@ -59,10 +59,10 @@
 	</script>
 </head>
 
-<body onload="browseArtist()">
-	<h1>Artist</h1> [ Planets | <a href="artist">Artist</a> | <a href="playlist">Playlist</a> | <a href="song">Song</a> ]
+<body onload="browseSong()">
+	<h1>Song</h1> [ Planets | <a href="artist">Artist</a> | <a href="playlist">Playlist</a> | <a href="song">Song</a>  ]
 	<div id="browse">
-		<p><a href="#" onClick="newArtist()">Add New</a> </p>
+		<p><a href="#" onClick="newSong()">Add New</a> </p>
 		<table border="1" cellpadding="5">
             <!-- Access data tuple passed from app.py --> 
             {% if data %}
@@ -89,8 +89,8 @@
                             {% endfor %}
 
                             <!-- Create our edit/delete buttons -->
-						    <td><a href="edit_artist/{{item.artistId}}" class="btn btn-default">Edit</a></td>
-						    <td><a href="delete_artist/{{item.artistId}}" class="btn btn-default">Delete</a></td>
+						    <td><a href="edit_song/{{item.songId}}" class="btn btn-default">Edit</a></td>
+						    <td><a href="delete_song/{{item.songId}}" class="btn btn-default">Delete</a></td>
 
 					    </tr> 
                         {% endfor %} 
@@ -100,42 +100,60 @@
 	</div>	<!-- browse -->
 
 	<div id="insert">
-		<!-- form to INSERT new data into Artists-->
-		<form id="insertArtist" action="/artist" method="post">
-			<legend><strong>Add Artist</strong></legend>
+		<!-- form to INSERT new data into Songs-->
+		<form id="insertSong" action="/song" method="post">
+			<legend><strong>Add Song</strong></legend>
 			<fieldset>
                 <!-- placeholder shows ghost text, required forces an input, pattern forces input adherence -->
-				<label for="make">first name:</label>
-				<input type="text" class="form-control" id="fname" name="fname" pattern="[A-Za-z]{1,}" placeholder="" required>
+				<label for="make">song name:</label>
+				<input type="text" class="form-control" id="songName" name="songName" pattern="[A-Za-z.@/s]{1,}" placeholder="" required>
 
-				<label for="model">last name:</label>
-				<input type="text" class="form-control" id="lname" name="lname" pattern="[A-Za-z]{1,}" placeholder="" required>
+				<label for="model">albumId:</label>
+				<input type="text" class="form-control" id="albumId" name="albumId" pattern="[0-9]{1,}" placeholder="" required>
 
-				<label for="model">email:</label>
-				<input type="text" class="form-control" id="email" name="email" pattern="[A-Za-z0-9.@]{1,}" placeholder="" required>
+				<label for="model">artistId:</label>
+				<input type="text" class="form-control" id="artistId" name="artistId" pattern="[0-9]{1,}" placeholder="" required>
+
+				<label for="model">genre:</label>
+				<input type="text" class="form-control" id="genre" name="genre" pattern="[A-Za-z.@/s]{1,}" placeholder="" required>
+
+				<label for="model">songLength:</label>
+				<input type="text" class="form-control" id="songLength" name="songLength" pattern="[0-9.@/s]{1,}" placeholder="" required>
+
+				<label for="model">totalStreams:</label>
+				<input type="text" class="form-control" id="totalStreams" name="totalStreams" pattern="[0-9.@/s]{1,}" placeholder="" required>
 
             </fieldset>
 
-            <!-- Create 'Add Artist' and 'Cancel' buttons -->
-			<input type="submit" value="Add Artist" name="Add_Artist" class="btn btn-primary" style="margin:.5rem;">
-			<input class="btn" type="button" value="Cancel" onClick="browseArtist()"> 
+            <!-- Create 'Add Song' and 'Cancel' buttons -->
+			<input type="submit" value="Add Song" name="Add_Song" class="btn btn-primary" style="margin:.5rem;">
+			<input class="btn" type="button" value="Cancel" onClick="browseSong()"> 
         </form>
 	</div><!--insert-->
 	<div id="edit">
-		<!-- form to edit data in Artists-->
-		<form id="editArtist" action="/edit_artist/{{data[0].id}}" method="post">
-			<legend><strong>Edit Artist</strong></legend>
+		<!-- form to edit data in Songs-->
+		<form id="editSong" action="/edit_song/{{data[0].id}}" method="post">
+			<legend><strong>Edit Song</strong></legend>
 			<fieldset>
-				<input type="hidden" value="{{data[0].id}}" class="form-control" id="artistId" name="artistId" required>
-				<label for="make">first name:</label>
+				<input type="hidden" value="{{data[0].id}}" class="form-control" id="songId" name="songId" required>
+				
+				<label for="make">song name:</label>
+				<input type="text" class="form-control" id="songName" name="songName" pattern="[A-Za-z0-9.@/s]{1,}" placeholder="{{data[0].songName}}" required>
+				
+				<label for="model">albumId:</label>
+				<input type="text" class="form-control" id="albumId" name="albumId" pattern="[0-9]{1,}" placeholder="{{data[0].albumId}}" required>
+				
+				<label for="year">artistId:</label>
+				<input type="text" class="form-control" id="artistId" name="artistId" pattern="[0-9]{1,}" placeholder="{{data[0].artistId}}" required>
 
-				<input type="text" class="form-control" id="fname" name="fname" pattern="[A-Za-z]{1,}" placeholder="{{data[0].fname}}" required>
-				<label for="model">last name:</label>
+				<label for="year">genre:</label>
+				<input type="text" class="form-control" id="genre" name="genre" pattern="[A-Za-z0-9.@/s]{1,}" placeholder="{{data[0].genre}}" required>
 
-				<input type="text" class="form-control" id="lname" name="lname" pattern="[A-Za-z0-9]{1,}" placeholder="{{data[0].lname}}" required>
-				<label for="year">email:</label>
+				<label for="year">songLength:</label>
+				<input type="text" class="form-control" id="songLength" name="songLength" pattern="[0-9]{1,}" placeholder="{{data[0].songLength}}" required>
 
-				<input type="text" class="form-control" id="email" name="email" pattern="[A-Za-z0-9.@]{1,}" placeholder="{{data[0].email}}" required>
+				<label for="year">totalStreams:</label>
+				<input type="text" class="form-control" id="totalStreams" name="totalStreams" pattern="[0-9]{1,}" placeholder="{{data[0].totalStreams}}" required>
         </form>
 	</div><!--edit-->
 </body>
