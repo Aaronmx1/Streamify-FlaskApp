@@ -30,52 +30,12 @@ db_connection = db.connect_to_database()
 def root():
     return render_template("main.j2")
 
-# RETRIEVE [R in CRUD]
-@app.route('/bsg-people')
-def bsg_people():
-    # Write the query and save it to a variable
-    query = "SELECT * FROM bsg_people;"
 
-    # The way the interface between MySQL and Flask works is by using an
-    # object called a cursor. Think of it as the object that acts as the
-    # person typing commands directly into the MySQL command line and
-    # reading them back to you when it gets results
-    cursor = db.execute_query(db_connection=db_connection, query=query)
-
-    # The cursor.fetchall() function tells the cursor object to return all
-    # the results from the previously executed
-    #
-    # The json.dumps() function simply converts the dictionary that was
-    # returned by the fetchall() call to JSON so we can display it on the
-    # page.
-    #results = json.dumps(cursor.fetchall())
-    results = cursor.fetchall()
-
-    # Sends the results back to the web browser.
-    #return results
-    return render_template("bsg.j2", bsg_people=results)
 
 # CREATE  [C in CRUD]
 @app.route('/people', methods=['POST', 'GET'])
 def people():
-    # Grab bsg_people data so we send it to our template to display
-    if request.method == 'GET':
-        # mySQL query to grab all the people in bsg_people
-        query = "SELECT bsg_people.id, fname, lname, bsg_planets.name AS homeworld, age FROM bsg_people LEFT JOIN bsg_planets ON homeworld = bsg_planets.id"
-        cur = mysql.connection.cursor()
-        cur.execute(query)
-        data = cur.fetchall()
-
-        # mySQL query to grab planet id/name data from our dropdown.  Dropdown created in people.j2 using jinja notation
-        query2 = "SELECT id, name FROM bsg_planets"
-        cur = mysql.connection.cursor()
-        cur.execute(query2)
-        homeworld_data = cur.fetchall()     # contains the results of this query, both id and name of each planet
-        # render edit_people page passing our query data and homeworld data to the edit_people template
-        return render_template("people.j2", data=data, homeworlds=homeworld_data)
-
-    
-    # Separate out the request methods, in this case this is for a POST
+# Separate out the request methods, in this case this is for a POST
     # insert a person into the bsg_people entity
     if request.method == 'POST':
         # fire off if user presses the Add Person button
@@ -117,6 +77,24 @@ def people():
         
             # redirect back to people page
             return redirect('/people')
+
+        # Grab bsg_people data so we send it to our template to display
+    if request.method == 'GET':
+        # mySQL query to grab all the people in bsg_people
+        query = "SELECT bsg_people.id, fname, lname, bsg_planets.name AS homeworld, age FROM bsg_people LEFT JOIN bsg_planets ON homeworld = bsg_planets.id"
+        cur = mysql.connection.cursor()
+        cur.execute(query)
+        data = cur.fetchall()
+
+        # mySQL query to grab planet id/name data from our dropdown.  Dropdown created in people.j2 using jinja notation
+        query2 = "SELECT id, name FROM bsg_planets"
+        cur = mysql.connection.cursor()
+        cur.execute(query2)
+        homeworld_data = cur.fetchall()     # contains the results of this query, both id and name of each planet
+        
+        # render edit_people page passing our query data and homeworld data to the edit_people template
+        return render_template("people.j2", data=data, homeworlds=homeworld_data)
+
 
 # DELETE [D in CRUD]
 # people.j2 href is routed here and supplies associated {{item.id}} to delete people by their id
