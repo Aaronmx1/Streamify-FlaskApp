@@ -3,7 +3,7 @@ services:
     mariadb:
         image: mariadb:10.5
         restart: on-failure
-        container_name: cs340FlaskPracticeContainer
+        container_name: cs340PersonalFlaskPracticeContainer
         env_file:
           - path: ./.env
             required: true
@@ -17,11 +17,11 @@ services:
         volumes:
           - ./mysql:/var/lib/mysql
     # phpMyAdmin for MariaDB
-    phpmyadmin:
-      image: phpmyadmin/phpmyadmin
-      environment:
-        PMA_HOST: mariadb
-        PMA_USER: ${MYSQL_USER}
-        PMA_PASSWORD: ${MYSQL_PASSWORD}
-      ports:
-        - "8080:80"
+    #    phpmyadmin:
+    #  image: phpmyadmin/phpmyadmin
+    #  environment:
+    #    PMA_HOST: mariadb
+    #    PMA_USER: ${MYSQL_USER}
+    #    PMA_PASSWORD: ${MYSQL_PASSWORD}
+    #  ports:
+    #    - "8080:80"
