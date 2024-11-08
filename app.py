@@ -35,7 +35,7 @@ db_connection = db.connect_to_database()
 # --------------------------------------- #
 
 # CREATE  [C in CRUD]
-@app.route('/artist', methods=['POST', 'GET'])
+@app.route('/artists', methods=['POST', 'GET'])
 def artist():
 # Separate out the request methods, in this case this is for a POST
     # insert a person into the bsg_people entity
@@ -43,45 +43,45 @@ def artist():
         # fire off if user presses the Add Person button
         if request.form.get("Add_Artist"):
             # grab user form inputs
-            fname = request.form["fname"]
-            lname = request.form["lname"]
+            fName = request.form["fName"]
+            lName = request.form["lName"]
             email = request.form["email"]
             
             # account for null first name AND last name AND email
-            if fname == "" and lname == "" and email == "":
+            if fName == "" and lName == "" and email == "":
                 # MySQL query to insert a new person into bsg_people with our form inputs
-                query = "INSERT INTO Artists (fname, lname, email) VALUES (%s, %s, %s)"
+                query = "INSERT INTO Artists (fName, lName, email) VALUES (%s, %s, %s)"
                 cur = mysql.connection.cursor()
-                cur.execute(query, (fname, lname, email))
+                cur.execute(query, (fName, lName, email))
                 mysql.connection.commit()
             
             # account for null email
             elif email == "":
-                query = "INSERT INTO Artists (fname, lname, email) VALUES (%s, %s, %s)"
+                query = "INSERT INTO Artists (fName, lName, email) VALUES (%s, %s, %s)"
                 cur = mysql.connection.cursor()
-                cur.execute(query, (fname, lname, email))
+                cur.execute(query, (fName, lName, email))
                 mysql.connection.commit()
 
             # no null inputs
             else:
-                query = "INSERT INTO Artists (fname, lname, email) VALUES (%s, %s, %s)"
+                query = "INSERT INTO Artists (fName, lName, email) VALUES (%s, %s, %s)"
                 cur = mysql.connection.cursor()
-                cur.execute(query, (fname, lname, email))
+                cur.execute(query, (fName, lName, email))
                 mysql.connection.commit()
         
             # redirect back to people page
-            return redirect('/artist')
+            return redirect('/artists')
 
     # Grab bsg_people data so we send it to our template to display
     if request.method == 'GET':
         # mySQL query to grab all the people in bsg_people
-        query = "SELECT artistId, fname, lname FROM Artists"
+        query = "SELECT artistId, fName, lName, email FROM Artists"
         cur = mysql.connection.cursor()
         cur.execute(query)
         data = cur.fetchall()
 
         # render edit_people page passing our query data and homeworld data to the edit_people template
-        return render_template("artist.j2", data=data)
+        return render_template("artists.j2", data=data)
 
 
 # DELETE [D in CRUD]
@@ -97,7 +97,7 @@ def delete_artist(id):                                          # set method
 
     # redirect back to people page
     # /delete_people route exists only to perform deletion and is itself not a page that displays to the user
-    return redirect('/artist')                                  # load page
+    return redirect('/artists')                                  # load page
 
 # UPDATE [U in CRUD]
 @app.route('/edit_artist/<int:id>', methods=['POST', 'GET'])    # create route
@@ -119,34 +119,34 @@ def edit_artist(id):                                            # set method
         if request.form.get("Edit_Artist"):
             # grab user form inputs
             id = request.form['artistId']
-            fname = request.form['fname']
-            lname = request.form['lname']
+            fName = request.form['fName']
+            lName = request.form['lName']
             email = request.form['email']
 
             # account for null first name AND last name
-            if fname == "" and lname == "":
+            if fName == "" and lName == "":
                 # mySQL query to update the attributes of person with our passed id value
-                query = "UPDATE Artists SET fname = %s, lname = %s, email = NULL WHERE artistId = %s"   # create desired query
+                query = "UPDATE Artists SET fName = %s, lName = %s, email = NULL WHERE artistId = %s"   # create desired query
                 cur = mysql.connection.cursor()
-                cur.execute(query, (fname, lname, id))          # execute desired query
+                cur.execute(query, (fName, lName, id))          # execute desired query
                 mysql.connection.commit()
 
             # account for null homeworld
             elif email == "":
-                query = "UPDATE Artists SET fname = %s, lname = %s, email = NULL WHERE artistId = %s"
+                query = "UPDATE Artists SET fName = %s, lName = %s, email = NULL WHERE artistId = %s"
                 cur = mysql.connection.cursor()
-                cur.execute(query, (fname, lname, id))
+                cur.execute(query, (fName, lName, id))
                 mysql.connection.commit()
 
             # no null inputs
             else:
-                query = "UPDATE Artists SET fname = %s, lname = %s, email = %s WHERE artistId = %s"
+                query = "UPDATE Artists SET fName = %s, lName = %s, email = %s WHERE artistId = %s"
                 cur = mysql.connection.cursor()
-                cur.execute(query, (fname, lname, email, id))
+                cur.execute(query, (fName, lName, email, id))
                 mysql.connection.commit()
 
             # redirect back to people page after we execute the update query
-            return redirect('/artist')
+            return redirect('/artists')
 
 
 # --------------------------------------- #
@@ -154,7 +154,7 @@ def edit_artist(id):                                            # set method
 # --------------------------------------- #
 
 # CREATE  [C in CRUD]
-@app.route('/playlist', methods=['POST', 'GET'])
+@app.route('/playlists', methods=['POST', 'GET'])
 def playlist():
 # Separate out the request methods, in this case this is for a POST
     # insert a person into the bsg_people entity
@@ -191,7 +191,7 @@ def playlist():
                 mysql.connection.commit()
         
             # redirect back to people page
-            return redirect('/playlist')
+            return redirect('/playlists')
 
     # Grab bsg_people data so we send it to our template to display
     if request.method == 'GET':
@@ -205,7 +205,7 @@ def playlist():
         #print("Data fetched from database:", data)
 
         # render edit_people page passing our query data and homeworld data to the edit_people template
-        return render_template("playlist.j2", data=data)
+        return render_template("playlists.j2", data=data)
 
 
 # DELETE [D in CRUD]
@@ -221,7 +221,7 @@ def delete_playlist(id):                                          # set method
 
     # redirect back to people page
     # /delete_people route exists only to perform deletion and is itself not a page that displays to the user
-    return redirect('/playlist')                                  # load page
+    return redirect('/playlists')                                  # load page
 
 # UPDATE [U in CRUD]
 @app.route('/edit_playlist/<int:id>', methods=['POST', 'GET'])    # create route
@@ -264,7 +264,7 @@ def edit_playlist(id):                                            # set method
                 mysql.connection.commit()
 
             # redirect back to people page after we execute the update query
-            return redirect('/playlist')
+            return redirect('/playlists')
 
 
 # --------------------------------------- #
@@ -272,7 +272,7 @@ def edit_playlist(id):                                            # set method
 # --------------------------------------- #
 
 # CREATE  [C in CRUD]
-@app.route('/song', methods=['POST', 'GET'])
+@app.route('/songs', methods=['POST', 'GET'])
 def song():
 # Separate out the request methods, in this case this is for a POST
     # insert a person into the bsg_people entity
@@ -311,7 +311,7 @@ def song():
                 mysql.connection.commit()
         
             # redirect back to people page
-            return redirect('/song')
+            return redirect('/songs')
 
     # Grab bsg_people data so we send it to our template to display
     if request.method == 'GET':
@@ -325,7 +325,7 @@ def song():
         #print("Data fetched from database:", data)
 
         # render edit_people page passing our query data and homeworld data to the edit_people template
-        return render_template("song.j2", data=data)
+        return render_template("songs.j2", data=data)
 
 
 # DELETE [D in CRUD]
@@ -341,7 +341,7 @@ def delete_song(id):                                          # set method
 
     # redirect back to people page
     # /delete_people route exists only to perform deletion and is itself not a page that displays to the user
-    return redirect('/song')                                  # load page
+    return redirect('/songs')                                  # load page
 
 # UPDATE [U in CRUD]
 @app.route('/edit_song/<int:id>', methods=['POST', 'GET'])    # create route
@@ -402,7 +402,7 @@ def edit_song(id):                                            # set method
                 mysql.connection.commit()
 
             # redirect back to people page after we execute the update query
-            return redirect('/song')
+            return redirect('/songs')
 
 
 # Listener
