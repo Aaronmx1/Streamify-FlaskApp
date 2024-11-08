@@ -1,0 +1,55 @@
+<html>
+<head>
+    <title>Edit Album</title>
+    <link href="style.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body>
+    <div>
+        <table border="1" cellpadding="5"> 
+            <caption> Editing Album: </caption>
+            {% if data %}
+                <thead>
+                    <tr>
+                        {% for key in data[0].keys() %}
+                        <th scope="col" data-field="{{ key }}">{{ key }}</th>
+                        {% endfor %} 
+                    </tr>
+                <tbody>
+                    {% for item in data %}
+                    <tr>
+                        {% for key in item.keys() %}
+                        <td>{{item[key]}}</td>
+                        {% endfor %} 
+                    </tr> 
+                    {% endfor %} 
+            {% endif %} 
+        </table>
+
+        <div id="edit">
+            <form id="editAlbum" action="/edit_album/{{data[0].albumId}}" method="post">
+                <legend><strong>Edit Album</strong></legend>
+                <fieldset>
+                    <input type="hidden" value="{{data[0].albumId}}" class="form-control" id="albumId" name="albumId" required>
+
+                    <label for="albumName">Album Name:</label>
+                    <input type="text" value="{{data[0].albumName}}" class="form-control" id="albumName" name="albumName" required>
+
+                    <label for="recordStudio">Record Studio:</label>
+                    <input type="text" value="{{data[0].recordStudio}}" class="form-control" id="recordStudio" name="recordStudio" required>
+
+                    <label for="yearReleased">Year Released:</label>
+                    <input type="number" value="{{data[0].yearReleased}}" class="form-control" id="yearReleased" name="yearReleased" required>
+
+                    <label for="artistId">Artist ID:</label>
+                    <input type="number" value="{{data[0].artistId}}" class="form-control" id="artistId" name="artistId" required>
+
+                    <label for="numberOfSongs">Number of Songs:</label>
+                    <input type="number" value="{{data[0].numberOfSongs}}" class="form-control" id="numberOfSongs" name="numberOfSongs" required>
+                </fieldset>
+                <input type="submit" value="Edit Album" name="Edit_Album" class="btn btn-primary" style="margin:.5rem;">
+                <a href='/albums'><input class="btn" type="button" value="cancel"></a>
+            </form>
+        </div>
+</body>
+</html>

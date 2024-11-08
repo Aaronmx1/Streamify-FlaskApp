@@ -1,0 +1,95 @@
+<html>
+<head>
+    <title>Liked Songs</title>
+    <link href="style.css" rel="stylesheet" type="text/css" />
+    <script language="JavaScript">
+    function showform(dowhat) {
+        if(dowhat == 'insert') {
+            document.getElementById('browse').style.display = 'none';
+            document.getElementById('insert').style.display = 'block';
+            document.getElementById('edit').style.display = 'none';
+            document.getElementById('delete').style.display = 'none';
+        } else if(dowhat == 'update') {
+            document.getElementById('browse').style.display = 'none';
+            document.getElementById('insert').style.display = 'none';
+            document.getElementById('edit').style.display = 'block';
+            document.getElementById('delete').style.display = 'none';
+        } else if(dowhat == 'delete') {
+            document.getElementById('browse').style.display = 'none';
+            document.getElementById('insert').style.display = 'none';
+            document.getElementById('edit').style.display = 'none';
+            document.getElementById('delete').style.display = 'block';
+        } else {
+            document.getElementById('browse').style.display = 'block';
+            document.getElementById('insert').style.display = 'none';
+            document.getElementById('edit').style.display = 'none';
+            document.getElementById('delete').style.display = 'none';
+        }
+    }
+
+    function newLikedSong() {
+        showform('insert');
+    }
+
+    function updateLikedSong(pid) {
+        showform('update');
+    }
+
+    function deleteLikedSong(pid) {
+        showform('delete');
+    }
+
+    function browseLikedSong() {
+        showform('browse');
+    }
+
+    function showAll() {
+        showform('all');
+    }
+    </script>
+</head>
+
+<body onload="browseLikedSong()">
+    <h1>Liked Songs</h1> [ <a href="/">Home</a> | <a href="users">Users</a> | <a href="subscriptions">Subscriptions</a>  | <a href="albums">Albums</a> | <a href="likedSongs">Liked Songs</a> | <a href="artists">Artists</a> | <a href="playlists">Playlists</a> | <a href="songs">Songs</a> | <a href="addedSongs">Added Songs</a> | <a href="collaborations">Collaborations</a> ]
+    <div id="browse">
+        <p><a href="#" onClick="newLikedSong()">Add New</a></p>
+        <table border="1" cellpadding="5">
+            {% if data %}
+            <thead>
+                <tr>
+                    {% for key in data[0].keys() %}
+                    <th scope="col">{{ key }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in data %}
+                <tr>
+                    {% for key in item.keys() %}
+                    <td>{{ item[key] }}</td>
+                    {% endfor %}
+                    <td><a href="edit_likedSong/{{ item.likedSongsId }}" class="btn btn-default">Edit</a></td>
+                    <td><a href="delete_likedSong/{{ item.likedSongsId }}" class="btn btn-default">Delete</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            {% endif %}
+        </table>
+    </div>
+
+    <div id="insert">
+        <form id="insertLikedSong" action="/likedSongs" method="post">
+            <legend><strong>Add Liked Song</strong></legend>
+            <fieldset>
+                <label for="songId">Song ID:</label>
+                <input type="number" class="form-control" id="songId" name="songId" required>
+
+                <label for="userId">User ID:</label>
+                <input type="number" class="form-control" id="userId" name="userId" required>
+            </fieldset>
+            <input type="submit" value="Add Liked Song" class="btn btn-primary">
+            <input type="button" value="Cancel" onClick="browseLikedSong()" class="btn">
+        </form>
+    </div>
+</body>
+</html>

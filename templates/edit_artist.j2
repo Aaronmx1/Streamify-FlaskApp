@@ -8,7 +8,7 @@
 <body>
     <div>
         <table border="1" cellpadding="5"> 
-            <caption> Editing User: </caption>
+            <caption> Editing Artist: </caption>
             <!-- Access data tuple passed from app.py -->
             {% if data %}
                 <thead>
@@ -45,19 +45,19 @@
                     <!-- We can preset form inputs to match attributes currently stored for 'id' of person to be updated via value= and accessing our passed data tuple -->
                     <!-- Create hidden form input to store the passed 'id' of the person we are editing so we can access it easily in our 'POST' method in our app.py -->
                     <input type="hidden" value="{{data[0].artistId}}" class="form-control" id="artistId" name="artistId" required>
-                    <label for="make">first name:</label>
-
-                    <input type="text" value="{{data[0].fname}}" class="form-control" id="fname" name="fname" pattern="[A-Za-z]{1,}" required>
-                    <label for="model">last name:</label>
-
-                    <input type="text" value="{{data[0].lname}}" class="form-control" id="lname" name="lname" pattern="[A-Za-z]{1,}" required>
+                    
+                    <label for="make">fName:</label>
+                    <input type="text" value="{{data[0].fName}}" class="form-control" id="fName" name="fName" pattern="[A-Za-z]{1,}" required>
+                    
+                    <label for="model">lName:</label>
+                    <input type="text" value="{{data[0].lName}}" class="form-control" id="lName" name="lName" pattern="[A-Za-z]{1,}" required>
+                    
                     <label for="model">email:</label>
-
                     <input type="text" value="{{data[0].email}}" class="form-control" id="email" name="email" pattern="[A-Za-z0-9.@]{1,}" required>
                 
                 </fieldset>
                 <input type="submit" value="Edit Artist" name="Edit_Artist" class="btn btn-primary" style="margin:.5rem;">
-                <a href='/artist'><input class="btn" type="button" value="cancel"></a>
+                <a href='/artists'><input class="btn" type="button" value="cancel"></a>
             </form>
 
 </html>

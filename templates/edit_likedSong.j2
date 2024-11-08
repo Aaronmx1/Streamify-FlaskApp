@@ -1,0 +1,46 @@
+<html>
+<head>
+    <title>Edit Liked Song</title>
+    <link href="style.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body>
+    <div>
+        <table border="1" cellpadding="5"> 
+            <caption> Editing Liked Song: </caption>
+            {% if data %}
+                <thead>
+                    <tr>
+                        {% for key in data[0].keys() %}
+                        <th scope="col" data-field="{{ key }}">{{ key }}</th>
+                        {% endfor %} 
+                    </tr>
+                <tbody>
+                    {% for item in data %}
+                    <tr>
+                        {% for key in item.keys() %}
+                        <td>{{ item[key] }}</td>
+                        {% endfor %} 
+                    </tr> 
+                    {% endfor %} 
+            {% endif %} 
+        </table>
+
+        <div id="edit">
+            <form id="editLikedSong" action="/edit_likedSong/{{data[0].likedSongsId}}" method="post">
+                <legend><strong>Edit Liked Song</strong></legend>
+                <fieldset>
+                    <input type="hidden" value="{{data[0].likedSongsId}}" class="form-control" id="likedSongsId" name="likedSongsId" required>
+
+                    <label for="songId">Song ID:</label>
+                    <input type="number" value="{{data[0].songId}}" class="form-control" id="songId" name="songId" required>
+
+                    <label for="userId">User ID:</label>
+                    <input type="number" value="{{data[0].userId}}" class="form-control" id="userId" name="userId" required>
+                </fieldset>
+                <input type="submit" value="Edit Liked Song" name="Edit_LikedSong" class="btn btn-primary" style="margin:.5rem;">
+                <a href='/likedSongs'><input class="btn" type="button" value="cancel"></a>
+            </form>
+        </div>
+</body>
+</html>

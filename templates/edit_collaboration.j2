@@ -1,14 +1,14 @@
 <html>
 
 <head>
-	<title>Edit Playlist</title>
+	<title>Edit Collaboration</title>
     <link href="style.css" rel="stylesheet" type="text/css" />
 </head>
 
 <body>
     <div>
         <table border="1" cellpadding="5"> 
-            <caption> Editing User: </caption>
+            <caption> Editing Collaboration: </caption>
             <!-- Access data tuple passed from app.py -->
             {% if data %}
                 <thead>
@@ -38,29 +38,23 @@
         </table>
 
         <div id="edit">
-            <!-- form to edit data in Playlists-->
-            <form id="editPlaylist" action="/edit_playlist/{{data[0].playlistId}}" method="post">
-                <legend><strong>Edit Playlist</strong></legend>
+            <!-- form to edit data in Collaborations-->
+            <form id="editCollaboration" action="/edit_collaboration/{{data[0].collaborationId}}" method="post">
+                <legend><strong>Edit Collaboration</strong></legend>
                 <fieldset>
                     <!-- We can preset form inputs to match attributes currently stored for 'id' of person to be updated via value= and accessing our passed data tuple -->
                     <!-- Create hidden form input to store the passed 'id' of the person we are editing so we can access it easily in our 'POST' method in our app.py -->
-                    <input type="hidden" value="{{data[0].playlistId}}" class="form-control" id="playlistId" name="playlistId" required>
+                    <input type="hidden" value="{{data[0].collaborationId}}" class="form-control" id="collaborationId" name="collaborationId" required>
                     
-                    <label for="make">playlistName:</label>
-                    <input type="text" value="{{data[0].playlistName}}" class="form-control" id="playlistName" name="playlistName" pattern="[A-Za-z0-9.@/s]{1,}" required>
+                    <label for="make">songId:</label>
+                    <input type="text" value="{{data[0].songId}}" class="form-control" id="songId" name="songId" pattern="[0-9]{1,}" required>
                     
-                    <label for="model">playlistDescription:</label>
-                    <input type="text" value="{{data[0].playlistDescription}}" class="form-control" id="playlistDescription" name="playlistDescription" pattern="[A-Za-z0-9.@/s]{1,}" required>
-                    
-                    <label for="model">userId:</label>
-                    <input type="text" value="{{data[0].userId}}" class="form-control" id="userId" name="userId" pattern="[A-Za-z0-9.@]{1,}" required>
-
-                    <label for="model">numberOfSongs:</label>
-                    <input type="text" value="{{data[0].numberOfSongs}}" class="form-control" id="numberOfSongs" name="numberOfSongs" pattern="[0-9]{1,}" required>
+                    <label for="model">artistId:</label>
+                    <input type="text" value="{{data[0].artistId}}" class="form-control" id="artistId" name="artistId" pattern="[0-9]{1,}" required>
                 
                 </fieldset>
-                <input type="submit" value="Edit Playlist" name="Edit_Playlist" class="btn btn-primary" style="margin:.5rem;">
-                <a href='/playlists'><input class="btn" type="button" value="cancel"></a>
+                <input type="submit" value="Edit Collaboration" name="Edit_Collaboration" class="btn btn-primary" style="margin:.5rem;">
+                <a href='/collaborations'><input class="btn" type="button" value="cancel"></a>
             </form>
 
 </html>

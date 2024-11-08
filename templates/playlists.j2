@@ -1,0 +1,148 @@
+<html>
+<!-- Adapted from the people.html UI design -->
+<head>
+	<title>Playlists</title>
+	<link href="style.css" rel="stylesheet" type="text/css" />
+	<script language="JavaScript">
+	function showform(dowhat) {
+		/*
+		 * four DIVS: browse, insert, update, delete
+		 * this function sets one visible the others not
+		 */
+		if(dowhat == 'insert') {
+			document.getElementById('browse').style.display = 'none';
+			document.getElementById('insert').style.display = 'block';
+			document.getElementById('edit').style.display = 'none';
+			document.getElementById('delete').style.display = 'none';
+		} else if(dowhat == 'update') {
+			document.getElementById('browse').style.display = 'none';
+			document.getElementById('insert').style.display = 'none';
+			document.getElementById('edit').style.display = 'block';
+			document.getElementById('delete').style.display = 'none';
+		} else if(dowhat == 'delete') {
+			document.getElementById('browse').style.display = 'none';
+			document.getElementById('insert').style.display = 'none';
+			document.getElementById('edit').style.display = 'none';
+			document.getElementById('delete').style.display = 'block';
+		} else if(dowhat == 'all') {
+			document.getElementById('browse').style.display = 'block';
+			document.getElementById('insert').style.display = 'block';
+			document.getElementById('edit').style.display = 'block';
+			document.getElementById('delete').style.display = 'block';
+		} else { //by default display browse
+			document.getElementById('browse').style.display = 'block';
+			document.getElementById('insert').style.display = 'none';
+			document.getElementById('edit').style.display = 'none';
+			document.getElementById('delete').style.display = 'none';
+		}
+	}
+
+	function newPlaylist() {
+		showform('insert');
+	}
+
+	function updatePlaylist(pid) {
+		showform('update');
+	}
+
+	function deletePlaylist(pid) {
+		showform('delete');
+	}
+
+	function browsePlaylist() {
+		showform('browse');
+	}
+
+	function showAll() {
+		showform('all');
+	}
+	</script>
+</head>
+
+<body onload="browsePlaylist()">
+	<h1>Playlist</h1> [ <a href="/">Home</a> | <a href="users">Users</a> | <a href="subscriptions">Subscriptions</a>  | <a href="albums">Albums</a> | <a href="likedSongs">Liked Songs</a> | <a href="artists">Artists</a> | <a href="playlists">Playlists</a> | <a href="songs">Songs</a> | <a href="addedSongs">Added Songs</a> | <a href="collaborations">Collaborations</a> ]
+	<div id="browse">
+		<p><a href="#" onClick="newPlaylist()">Add New</a> </p>
+		<table border="1" cellpadding="5">
+            <!-- Access data tuple passed from app.py --> 
+            {% if data %}
+			    <thead>
+				    <tr>
+					    <!-- Iterate through each key in the first entry to get the column name -->
+                        {% for key in data[0].keys() %}
+					    
+                        <!-- Create a <th> tag with the key inside of it, this will be our header row -->
+					    <th scope="col" data-field="{{ key }}" data-filter-control="input">{{ key }}</th>
+					
+                        <!-- End of this for loop -->
+                        {% endfor %} 
+                    </tr>
+
+				<tbody>
+					<!-- Now, iterate through every item in data -->{% for item in data %}
+					    <tr>
+						    <!-- Then iterate through every key in the current item dictionary -->
+                            {% for key in item.keys() %}
+						    <!-- Create a <td> element with the value of that key in it -->
+						    <td> {{item[key]}} </td>
+
+                            {% endfor %}
+
+                            <!-- Create our edit/delete buttons -->
+						    <td><a href="edit_playlist/{{item.playlistId}}" class="btn btn-default">Edit</a></td>
+						    <td><a href="delete_playlist/{{item.playlistId}}" class="btn btn-default">Delete</a></td>
+
+					    </tr> 
+                        {% endfor %} 
+                {% endif %} 
+        </table>   
+	<p>&nbsp;</p>
+	</div>	<!-- browse -->
+
+	<div id="insert">
+		<!-- form to INSERT new data into Playlists-->
+		<form id="insertPlaylist" action="/playlists" method="post">
+			<legend><strong>Add Playlist</strong></legend>
+			<fieldset>
+                <!-- placeholder shows ghost text, required forces an input, pattern forces input adherence -->
+				<label for="make">playlistName:</label>
+				<input type="text" class="form-control" id="playlistName" name="playlistName" pattern="[A-Za-z0-9.@]{1,}" placeholder="" required>
+
+				<label for="model">playlistDescription:</label>
+				<input type="text" class="form-control" id="playlistDescription" name="playlistDescription" pattern="[A-Za-z0-9.@\s]{1,}" placeholder="" required>
+
+				<label for="model">userId:</label>
+				<input type="text" class="form-control" id="userId" name="userId" pattern="[0-9]{1,}" placeholder="" required>
+
+				<label for="model">numberOfSongs:</label>
+				<input type="text" class="form-control" id="numberOfSongs" name="numberOfSongs" pattern="[0-9]{1,}" placeholder="" required>
+
+            </fieldset>
+
+            <!-- Create 'Add Playlist' and 'Cancel' buttons -->
+			<input type="submit" value="Add Playlist" name="Add_Playlist" class="btn btn-primary" style="margin:.5rem;">
+			<input class="btn" type="button" value="Cancel" onClick="browsePlaylist()"> 
+        </form>
+	</div><!--insert-->
+	<div id="edit">
+		<!-- form to edit data in Playlists-->
+		<form id="editPlaylist" action="/edit_playlist/{{data[0].id}}" method="post">
+			<legend><strong>Edit Playlist</strong></legend>
+			<fieldset>
+				<input type="hidden" value="{{data[0].id}}" class="form-control" id="playlistId" name="playlistId" required>
+				
+				<label for="make">playlistName:</label>
+				<input type="text" class="form-control" id="playlistName" name="playlistName" pattern="[A-Za-z0-9.@]{1,}" placeholder="{{data[0].playlistName}}" required>
+				
+				<label for="model">playlistDescription:</label>
+				<input type="text" class="form-control" id="playlistDescription" playlistDescription="lname" pattern="[A-Za-z0-9\s]{1,}" placeholder="{{data[0].playlistDescription}}" required>
+				
+				<label for="year">userId:</label>
+				<input type="text" class="form-control" id="userId" name="userId" pattern="[A-Za-z0-9.@]{1,}" placeholder="{{data[0].userId}}" required>
+
+				<label for="year">numberOfSongs:</label>
+				<input type="text" class="form-control" id="numberOfSongs" name="numberOfSongs" pattern="[0-9]{1,}" placeholder="{{data[0].numberOfSongs}}" required>
+        </form>
+	</div><!--edit-->
+</body>
+</html>
