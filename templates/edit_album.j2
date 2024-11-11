@@ -41,8 +41,14 @@
                     <label for="yearReleased">Year Released:</label>
                     <input type="number" value="{{data[0].yearReleased}}" class="form-control" id="yearReleased" name="yearReleased" required>
 
-                    <label for="artistId">Artist ID:</label>
-                    <input type="number" value="{{data[0].artistId}}" class="form-control" id="artistId" name="artistId" required>
+                    <label for="artistName">Artist:</label>
+                    <select class="form-control" id="artistName" name="artistName" required>
+                        {% for artist in artists %}
+                            <option value="{{ artist.artistId }}" {% if data[0].artistId == artist.artistId %} selected {% endif %}>
+                                {{ artist.artistName }}
+                            </option>
+                        {% endfor %}
+                    </select>
 
                     <label for="numberOfSongs">Number of Songs:</label>
                     <input type="number" value="{{data[0].numberOfSongs}}" class="form-control" id="numberOfSongs" name="numberOfSongs" required>

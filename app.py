@@ -505,7 +505,7 @@ def view_albums():
     # insert a person into the bsg_people entity
     if request.method == 'POST':
         # fire off if user presses the Add Person button
-        if request.form.get("Add_Albums"):
+        if request.form.get("Add_Album"):
             # grab user form inputs
             albumName = request.form["albumName"]
             recordStudio = request.form["recordStudio"]
@@ -515,7 +515,7 @@ def view_albums():
 
             if numberOfSongs == '0': 
                 # MySQL query to insert a new person into bsg_people with our form inputs
-                query = "INSERT INTO Artists (albumName, recordStudio, yearReleased, artistId, numberOfSongs = 0) VALUES (%s, %s, %s, %s)"
+                query = "INSERT INTO Albums (albumName, recordStudio, yearReleased, artistId, numberOfSongs = 0) VALUES (%s, %s, %s, %s)"
                 cur = mysql.connection.cursor()
                 cur.execute(query, (albumName, recordStudio, yearReleased, artistId))
                 mysql.connection.commit()
@@ -525,17 +525,20 @@ def view_albums():
 
     # Grab bsg_people data so we send it to our template to display
     if request.method == 'GET':
-        # mySQL query to grab all the people in bsg_people
-        query = "SELECT albumName, recordStudio, yearReleased, artistId, numberOfSongs FROM Albums"
+        # mySQL query to grab all the people in Albums
+        query = "SELECT albumId, albumName, recordStudio, yearReleased, artistId, numberOfSongs FROM Albums"
         cur = mysql.connection.cursor()
         cur.execute(query)
         data = cur.fetchall()
-        
-        # Debugging output
-        #print("Data fetched from database:", data)
+
+        # mySQL query to grab Artists id/name for our dropdown
+        query2 = "SELECT artistId, CONCAT(fName, ' ', lName) AS artistName FROM Artists"
+        cur = mysql.connection.cursor()
+        cur.execute(query2)
+        artists_data = cur.fetchall()
 
         # render edit_people page passing our query data and homeworld data to the edit_people template
-        return render_template("albums.j2", data=data)
+        return render_template("albums.j2", data=data, artists=artists_data)
 
 
 # DELETE [D in CRUD]
@@ -564,8 +567,14 @@ def edit_album(id):                                            # set method
         cur.execute(query)                                      # execute desired query
         data = cur.fetchall()
 
+        # mySQL query to grab Artists id/name for our dropdown
+        query2 = "SELECT artistId, CONCAT(fName, ' ', lName) AS artistName FROM Artists"
+        cur = mysql.connection.cursor()
+        cur.execute(query2)
+        artists_data = cur.fetchall()
+
         # render edit_people page passing our query data and homeworld data to the edit_people template
-        return render_template("edit_album.j2", data=data)
+        return render_template("edit_album.j2", data=data, artists=artists_data)
 
     # meat and potatoes of our update functionality
     if request.method == 'POST':
@@ -581,7 +590,7 @@ def edit_album(id):                                            # set method
             # mySQL query to update the attributes of person with our passed id value
             query = "UPDATE Albums SET albumName = %s, recordStudio = %s, yearReleased = %s, numberOfSongs = %s WHERE albumId = %s"   # create desired query
             cur = mysql.connection.cursor()
-            cur.execute(query, (albumName, albumName, recordStudio, yearReleased, subscrinumberOfSongsptionId))          # execute desired query
+            cur.execute(query, (albumName, recordStudio, yearReleased, numberOfSongs, id))          # execute desired query
             mysql.connection.commit()
 
             # redirect back to people page after we execute the update query
