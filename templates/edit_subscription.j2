@@ -30,7 +30,7 @@
             <form id="editSubscription" action="/edit_subscription/{{data[0].subscriptionId}}" method="post">
                 <legend><strong>Edit Subscription</strong></legend>
                 <fieldset>
-                    <input type="hidden" value="{{data[0].subscriptionId}}" class="form-control" id="subscriptionId" name="subscriptionId" required>
+                    {#<input type="hidden" value="{{data[0].subscriptionId}}" class="form-control" id="subscriptionId" name="subscriptionId" required>#}
 
                     <label for="subscriptionDescription">Description:</label>
                     <input type="text" value="{{data[0].subscriptionDescription}}" class="form-control" id="subscriptionDescription" name="subscriptionDescription" required>

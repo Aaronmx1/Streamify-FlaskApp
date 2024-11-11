@@ -13,15 +13,15 @@
         <p>Use the navigation bar to access various sections of the platform.</p>
         <nav>
             <a href="{{ url_for('root') }}">Home</a>
-            <a href="{{ url_for('/users') }}">Users</a>
-            <a href="{{ url_for('/subscriptions') }}">Subscriptions</a>
-            <a href="{{ url_for('/albums') }}">Albums</a>
-            <a href="{{ url_for('/likedSongs') }}">Liked Songs</a>
-            <a href="{{ url_for('/artists') }}">Artists</a>
-            <a href="{{ url_for('/playlists') }}">Playlists</a>
-            <a href="{{ url_for('/songs') }}">Songs</a>
-            <a href="{{ url_for('/addedSongs') }}">Added Songs</a>
-            <a href="{{ url_for('/collaborations') }}">Collaborations</a>
+            <a href="{{ url_for('view_users') }}">Users</a>
+            <a href="{{ url_for('view_subscriptions') }}">Subscriptions</a>
+            <a href="{{ url_for('view_albums') }}">Albums</a>
+            {#<a href="{{ url_for('view_likedSongs') }}">Liked Songs</a>#}
+            <a href="{{ url_for('view_artists') }}">Artists</a>
+            <a href="{{ url_for('view_playlists') }}">Playlists</a>
+            <a href="{{ url_for('view_songs') }}">Songs</a>
+            {#<a href="{{ url_for('view_addedSongs') }}">Added Songs</a>#}
+            {#<a href="{{ url_for('view_collaborations') }}">Collaborations</a>#}
         </nav>
     </header>
     <main>
