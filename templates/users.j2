@@ -95,8 +95,15 @@
 
                 <label for="subscriptionId">Subscription ID:</label>
                 <input type="number" class="form-control" id="subscriptionId" name="subscriptionId" required>
+                
+                <label for="subscriptionId">Subscription:</label>
+                <select class="form-control" id="subscriptionId" name="subscriptionId" required>
+                    {% for subscription in subscriptions %}
+                        <option value="{{ subscription.subscriptionId }}">{{ subscription.subscriptionDescription }}</option>
+                    {% endfor %}
+                </select>
             </fieldset>
-            <input type="submit" value="Add User" class="btn btn-primary">
+            <input type="submit" value="Add Subscription" class="btn btn-primary">
             <input type="button" value="Cancel" onClick="browseUser()" class="btn">
         </form>
     </div>

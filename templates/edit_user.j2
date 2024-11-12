@@ -44,8 +44,14 @@
                     <label for="dob">Date of Birth:</label>
                     <input type="date" value="{{data[0].dob}}" class="form-control" id="dob" name="dob" required>
 
-                    <label for="subscriptionId">Subscription ID:</label>
-                    <input type="number" value="{{data[0].subscriptionId}}" class="form-control" id="subscriptionId" name="subscriptionId" required>
+                    <label for="subscriptionDescription">Subscription Name:</label>
+                    <select class="form-control" id="subscriptionDescription" name="subscriptionDescription" required>
+                        {% for subscription in subscriptions %}
+                            <option value="{{ subscription.subscriptionId }}" {% if data[0].subscriptionId == subscription.subscriptionId %} selected {% endif %}>
+                                {{ subscription.subscriptionDescription }}
+                            </option>
+                        {% endfor %}
+                    </select>
                 </fieldset>
                 <input type="submit" value="Edit User" name="Edit_User" class="btn btn-primary" style="margin:.5rem;">
                 <a href='/users'><input class="btn" type="button" value="cancel"></a>

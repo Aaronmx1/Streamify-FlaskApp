@@ -9,6 +9,7 @@ import database.db_connector as db
 
 # Configuration
 
+# Local DB credentials
 app = Flask(__name__)
 app.config['MYSQL_HOST'] = os.environ.get('MYSQL_HOST')
 app.config['MYSQL_USER'] = os.environ.get('MYSQL_USER')
@@ -16,6 +17,14 @@ app.config['MYSQL_PASSWORD'] = os.environ.get('MYSQL_PASSWORD')
 app.config['MYSQL_DB'] = os.environ.get('MYSQL_DATABASE')
 app.config['MYSQL_PORT'] = int(os.environ.get('MYSQL_PORT'))
 app.config["MYSQL_CURSORCLASS"] = "DictCursor"          # required for tuple object to be converted to dictionary
+
+# OSU server credentials
+#app.config['MYSQL_HOST'] = "classmysql.engr.oregonstate.edu"
+#app.config['MYSQL_USER'] = "cs340_newellti"
+#app.config['MYSQL_PASSWORD'] = "cKUcH33eJNqf"
+#app.config['MYSQL_DB'] = "cs340_newellti" 
+#app.config['MYSQL_PORT'] = int(os.environ.get('MYSQL_PORT', 9342))
+#app.config["MYSQL_CURSORCLASS"] = "DictCursor"          # required for tuple object to be converted to dictionary
 
 mysql = MySQL(app)
 
@@ -434,14 +443,20 @@ def view_users():
 
     # Grab bsg_people data so we send it to our template to display
     if request.method == 'GET':
-        # mySQL query to grab all the people in bsg_people
+        # mySQL query to grab all the people in Users
         query = "SELECT * FROM Users"
         cur = mysql.connection.cursor()
         cur.execute(query)
         data = cur.fetchall()
 
+        # mySQL query to grab Subscription id/name for our dropdown
+        query2 = "SELECT subscriptionId, subscriptionDescription FROM Subscriptions"
+        cur = mysql.connection.cursor()
+        cur.execute(query2)
+        subscription_data = cur.fetchall()
+
         # render edit_people page passing our query data and homeworld data to the edit_people template
-        return render_template("users.j2", data=data)
+        return render_template("users.j2", data=data, subscriptions=subscription_data)
 
 
 # DELETE [D in CRUD]
@@ -470,32 +485,38 @@ def edit_user(id):                                            # set method
         cur.execute(query)                                      # execute desired query
         data = cur.fetchall()
 
+        # mySQL query to grab Artists id/name for our dropdown
+        query2 = "SELECT subscriptionId, subscriptionDescription FROM Subscriptions"
+        cur = mysql.connection.cursor()
+        cur.execute(query2)
+        subscription_data = cur.fetchall()
+
         # render edit_people page passing our query data and homeworld data to the edit_people template
-        return render_template("edit_user.j2", data=data)
+        return render_template("edit_user.j2", data=data, subscriptions=subscription_data)
 
     # meat and potatoes of our update functionality
     if request.method == 'POST':
         # fire off if user clicks the 'Edit Person' button
         if request.form.get("Edit_User"):
             # grab user form inputs
-            id = request.form['artistId']
+            id = request.form['userId']
             fName = request.form["fName"]
             lName = request.form["lName"]
             email = request.form["email"]
             dob = request.form["dob"]
-            subscriptionId = request.form["subscriptionId"]
+            #subscriptionId = request.form["subscriptionId"]
 
             # mySQL query to update the attributes of person with our passed id value
             query = "UPDATE Users SET fName = %s, lName = %s, email = %s, dob = %s WHERE userId = %s"   # create desired query
             cur = mysql.connection.cursor()
-            cur.execute(query, (fName, lName, email, dob, subscriptionId))          # execute desired query
+            cur.execute(query, (fName, lName, email, dob, id))          # execute desired query
             mysql.connection.commit()
 
             # redirect back to people page after we execute the update query
             return redirect('/users')
 
 # --------------------------------------- #
-#           Albums table
+#           Albums table        -- AM: COMPLETED 11/11
 # --------------------------------------- #
 
 # CREATE  [C in CRUD]
@@ -585,12 +606,13 @@ def edit_album(id):                                            # set method
             albumName = request.form["albumName"]
             recordStudio = request.form["recordStudio"]
             yearReleased = request.form["yearReleased"]
+            artistId = request.form["artistId"]
             numberOfSongs = request.form["numberOfSongs"]
 
             # mySQL query to update the attributes of person with our passed id value
-            query = "UPDATE Albums SET albumName = %s, recordStudio = %s, yearReleased = %s, numberOfSongs = %s WHERE albumId = %s"   # create desired query
+            query = "UPDATE Albums SET albumName = %s, recordStudio = %s, yearReleased = %s, artistId = (SELECT artistId FROM Artists WHERE artistId = %s), numberOfSongs = %s WHERE albumId = %s"   # create desired query
             cur = mysql.connection.cursor()
-            cur.execute(query, (albumName, recordStudio, yearReleased, numberOfSongs, id))          # execute desired query
+            cur.execute(query, (albumName, recordStudio, yearReleased, artistId, numberOfSongs, id))          # execute desired query
             mysql.connection.commit()
 
             # redirect back to people page after we execute the update query
@@ -685,6 +707,10 @@ def edit_subscription(id):                                            # set meth
 
             # redirect back to people page after we execute the update query
             return redirect('/subscriptions')
+
+
+
+
 
 # Listener
 
