@@ -48,12 +48,24 @@
                     
                     <label for="make">songName:</label>
                     <input type="text" value="{{data[0].songName}}" class="form-control" id="songName" name="songName" pattern="[A-Za-z0-9.@/s]{1,}" required>
-                    
-                    <label for="model">albumId:</label>
-                    <input type="text" value="{{data[0].albumId}}" class="form-control" id="albumId" name="albumId" pattern="[0-9]{1,}" required>
-                    
-                    <label for="model">artistId:</label>
-                    <input type="text" value="{{data[0].artistId}}" class="form-control" id="artistId" name="artistId" pattern="[0-9]{1,}" required>
+
+                    <label for="albumId">Album:</label>
+                    <select class="form-control" id="albumId" name="albumId" required>
+                        {% for album in albums %}
+                            <option value="{{ album.albumId }}" {% if data[0].albumId == album.albumId %} selected {% endif %}>
+                                {{ album.albumName }}
+                            </option>
+                        {% endfor %}
+                    </select>
+
+                    <label for="artistId">Artist:</label>
+                    <select class="form-control" id="artistId" name="artistId" required>
+                        {% for artist in artists %}
+                            <option value="{{ artist.artistId }}" {% if data[0].artistId == artist.artistId %} selected {% endif %}>
+                                {{ artist.artistName }}
+                            </option>
+                        {% endfor %}
+                    </select>
 
                     <label for="model">genre:</label>
                     <input type="text" value="{{data[0].genre}}" class="form-control" id="genre" name="genre" pattern="[A-Za-z.@/s]{1,}" required>

@@ -175,43 +175,29 @@ def view_playlists():
             playlistDescription = request.form["playlistDescription"]
             userId = request.form["userId"]
             numberOfSongs = request.form["numberOfSongs"]
-            
-            # account for numberOfSongs being NULL
-            if numberOfSongs == "":
-                # MySQL query to insert a new person into bsg_people with our form inputs
-                query = "INSERT INTO Playlists (playlistName, playlistDescription, userId) VALUES (%s, %s, %s)"
-                cur = mysql.connection.cursor()
-                cur.execute(query, (playlistName, playlistDescription, userId))
-                mysql.connection.commit()
 
-            # account for userId being NULL
-            elif userId == "":
-                # MySQL query to insert a new playlist into Playlists with our form inputs
-                query = "INSERT INTO Playlists (playlistName, playlistDescription, numberOfSongs) VALUES (%s, %s, %s)"
-                cur = mysql.connection.cursor()
-                cur.execute(query, (playlistName, playlistDescription, numberOfSongs))
-                mysql.connection.commit()
-
-            # no null inputs
-            else:
-                query = "INSERT INTO Playlists (playlistName, playlistDescription, userId, numberOfSongs) VALUES (%s, %s, %s, %s)"
-                cur = mysql.connection.cursor()
-                cur.execute(query, (playlistName, playlistDescription, userId, numberOfSongs))
-                mysql.connection.commit()
+            # capture user input            
+            query = "INSERT INTO Playlists (playlistName, playlistDescription, userId, numberOfSongs) VALUES (%s, %s, %s, %s)"
+            cur = mysql.connection.cursor()
+            cur.execute(query, (playlistName, playlistDescription, userId, numberOfSongs))
+            mysql.connection.commit()
         
             # redirect back to people page
             return redirect('/playlists')
 
     # Grab bsg_people data so we send it to our template to display
     if request.method == 'GET':
-        # mySQL query to grab all the people in bsg_people
+        # mySQL query to grab all the details in Playlists
         query = "SELECT playlistId, playlistName, playlistDescription, userId, numberOfSongs FROM Playlists"
         cur = mysql.connection.cursor()
         cur.execute(query)
         data = cur.fetchall()
         
-        # Debugging output
-        #print("Data fetched from database:", data)
+        # mySQL query to grab all the userId and userName in Users
+        query = "SELECT userId, CONCAT(fName, ' ', lName) FROM Users"
+        cur = mysql.connection.cursor()
+        cur.execute(query)
+        data = cur.fetchall()
 
         # render edit_people page passing our query data and homeworld data to the edit_people template
         return render_template("playlists.j2", data=data)
@@ -277,7 +263,7 @@ def edit_playlist(id):                                            # set method
 
 
 # --------------------------------------- #
-#           Songs table
+#           Songs table             -- AM: COMPLETED 11/11
 # --------------------------------------- #
 
 # CREATE  [C in CRUD]
@@ -296,45 +282,37 @@ def view_songs():
             songLength = request.form["songLength"]
             totalStreams = request.form["totalStreams"]
             
-            # account for songLength being NULL
-            if songLength == "":
-                # MySQL query to insert a new person into bsg_people with our form inputs
-                query = "INSERT INTO Songs (songName, albumId, artistId, genre, totalStreams) VALUES (%s, %s, %s, %s, %s)"
-                cur = mysql.connection.cursor()
-                cur.execute(query, (songName, albumId, artistId, genre, totalStreams))
-                mysql.connection.commit()
-
-            # account for userId being NULL
-            elif totalStreams == "":
-                # MySQL query to insert a new playlist into Playlists with our form inputs
-                query = "INSERT INTO Songs (songName, albumId, artistId, genre, songLength) VALUES (%s, %s, %s, %s, %s)"
-                cur = mysql.connection.cursor()
-                cur.execute(query, (songName, albumId, artistId, genre, songLength))
-                mysql.connection.commit()
-
-            # no null inputs
-            else:
-                query = "INSERT INTO Songs (songName, albumId, artistId, genre, songLength, totalStreams) VALUES (%s, %s, %s, %s, %s, %s)"
-                cur = mysql.connection.cursor()
-                cur.execute(query, (songName, albumId, artistId, genre, songLength, totalStreams))
-                mysql.connection.commit()
+            # Expected input for Songs 
+            query = "INSERT INTO Songs (songName, albumId, artistId, genre, songLength, totalStreams) VALUES (%s, %s, %s, %s, %s, %s)"
+            cur = mysql.connection.cursor()
+            cur.execute(query, (songName, albumId, artistId, genre, songLength, totalStreams))
+            mysql.connection.commit()
         
             # redirect back to people page
             return redirect('/songs')
 
     # Grab bsg_people data so we send it to our template to display
     if request.method == 'GET':
-        # mySQL query to grab all the people in bsg_people
+        # mySQL query to grab all the people in Songs
         query = "SELECT songId, songName, albumId, artistId, genre, songLength, totalStreams FROM Songs"
         cur = mysql.connection.cursor()
         cur.execute(query)
         data = cur.fetchall()
         
-        # Debugging output
-        #print("Data fetched from database:", data)
+        # mySQL query to grab all the people in Albums
+        query2 = "SELECT albumId, albumName FROM Albums"
+        cur = mysql.connection.cursor()
+        cur.execute(query2)
+        albums_data = cur.fetchall()
+
+        # mySQL query to grab all the people in Artists
+        query3 = "SELECT artistId, CONCAT(fName, ' ', lName) AS artistName FROM Artists"
+        cur = mysql.connection.cursor()
+        cur.execute(query3)
+        artists_data = cur.fetchall()
 
         # render edit_people page passing our query data and homeworld data to the edit_people template
-        return render_template("songs.j2", data=data)
+        return render_template("songs.j2", data=data, albums=albums_data, artists=artists_data)
 
 
 # DELETE [D in CRUD]
@@ -363,8 +341,20 @@ def edit_song(id):                                            # set method
         cur.execute(query)                                      # execute desired query
         data = cur.fetchall()
 
+        # MySQL query to grab albumId and albumName from Album
+        query2 = "SELECT albumId, albumName FROM Albums" # create desired query      % (id) obtains edit_people(id) and passes it to %s in query
+        cur = mysql.connection.cursor()
+        cur.execute(query2)                                      # execute desired query
+        album_data = cur.fetchall()
+
+        # MySQL query to grab albumId and albumName from Album
+        query3 = "SELECT artistId, CONCAT(fName, ' ', lName) AS artistName FROM Artists" # create desired query      % (id) obtains edit_people(id) and passes it to %s in query
+        cur = mysql.connection.cursor()
+        cur.execute(query3)                                      # execute desired query
+        artist_data = cur.fetchall()
+
         # render edit_people page passing our query data and homeworld data to the edit_people template
-        return render_template("edit_song.j2", data=data)
+        return render_template("edit_song.j2", data=data, albums=album_data, artists=artist_data)
 
     # meat and potatoes of our update functionality
     if request.method == 'POST':
@@ -380,41 +370,16 @@ def edit_song(id):                                            # set method
             totalStreams = request.form["totalStreams"]
 
             # account for null songLength and totalSteams
-            if songLength == '0' and totalStreams == '0':
-                # mySQL query to update the attributes of person with our passed id value
-                query = "UPDATE Songs SET songName = %s, albumId = %s, artistId = %s, genre = %s WHERE songId = %s"   # create desired query
-                cur = mysql.connection.cursor()
-                cur.execute(query, (songName, albumId, artistId, genre))          # execute desired query
-                mysql.connection.commit()
-
-            # account for null songLength
-            elif songLength == '0':
-                # mySQL query to update the attributes of person with our passed id value
-                query = "UPDATE Songs SET songName = %s, albumId = %s, artistId = %s, genre = %s, totalStreams = %s WHERE songId = %s"   # create desired query
-                cur = mysql.connection.cursor()
-                cur.execute(query, (songName, albumId, artistId, genre, totalStreams))          # execute desired query
-                mysql.connection.commit()
-
-            # account for null totalStreams
-            elif totalStreams == '0':
-                # mySQL query to update the attributes of person with our passed id value
-                query = "UPDATE Songs SET songName = %s, albumId = %s, artistId = %s, genre = %s, songLength = %s WHERE songId = %s"   # create desired query
-                cur = mysql.connection.cursor()
-                cur.execute(query, (songName, albumId, artistId, genre, songLength))          # execute desired query
-                mysql.connection.commit()
-
-            # no null inputs
-            else:
-                query = "UPDATE Songs SET songName = %s, albumId = %s, artistId = %s, genre = %s, songLength = %s, totalStreams = %s WHERE songId = %s"   # create desired query
-                cur = mysql.connection.cursor()
-                cur.execute(query, (songName, albumId, artistId, genre, songLength, totalStreams))          # execute desired query
-                mysql.connection.commit()
+            query = "UPDATE Songs SET songName = %s, albumId = (SELECT albumId FROM albums WHERE albumId = %s), artistId = (SELECT artistId FROM Artists Where artistId = %s), genre = %s, songLength = %s, totalStreams = %s WHERE songId = %s"   # create desired query
+            cur = mysql.connection.cursor()
+            cur.execute(query, (songName, albumId, artistId, genre, songLength, totalStreams))          # execute desired query
+            mysql.connection.commit()   
 
             # redirect back to people page after we execute the update query
             return redirect('/songs')
 
 # --------------------------------------- #
-#           Users table
+#           Users table             -- AM: COMPLETED 11/11
 # --------------------------------------- #
 
 # CREATE  [C in CRUD]
@@ -504,12 +469,12 @@ def edit_user(id):                                            # set method
             lName = request.form["lName"]
             email = request.form["email"]
             dob = request.form["dob"]
-            #subscriptionId = request.form["subscriptionId"]
+            subscriptionId = request.form["subscriptionId"]
 
             # mySQL query to update the attributes of person with our passed id value
-            query = "UPDATE Users SET fName = %s, lName = %s, email = %s, dob = %s WHERE userId = %s"   # create desired query
+            query = "UPDATE Users SET fName = %s, lName = %s, email = %s, dob = %s, subscriptionId = (SELECT subscriptionId FROM Subscriptions WHERE subscriptionId = %s) WHERE userId = %s"   # create desired query
             cur = mysql.connection.cursor()
-            cur.execute(query, (fName, lName, email, dob, id))          # execute desired query
+            cur.execute(query, (fName, lName, email, dob, subscriptionId, id))          # execute desired query
             mysql.connection.commit()
 
             # redirect back to people page after we execute the update query
@@ -620,7 +585,7 @@ def edit_album(id):                                            # set method
 
 
 # --------------------------------------- #
-#           Subcriptions table
+#           Subcriptions table      -- AM: TO BE DROPPED
 # --------------------------------------- #
 
 # CREATE  [C in CRUD]
