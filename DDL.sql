@@ -110,10 +110,10 @@ CREATE TABLE Songs (
 
 -- Handles M:N relationship between Users and Songs
 CREATE TABLE LikedSongs (
-    linkedSongsId int(11) NOT NULL AUTO_INCREMENT,
+    likedSongsId int(11) NOT NULL AUTO_INCREMENT,
     songId int(11) NOT NULL,
     userId int(11) NOT NULL,
-    PRIMARY KEY (linkedSongsId),
+    PRIMARY KEY (likedSongsId),
     CONSTRAINT FOREIGN KEY (songId) REFERENCES Songs (songId)
         ON UPDATE CASCADE
         ON DELETE RESTRICT,

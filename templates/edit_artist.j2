@@ -46,13 +46,13 @@
                     <!-- Create hidden form input to store the passed 'id' of the person we are editing so we can access it easily in our 'POST' method in our app.py -->
                     <input type="hidden" value="{{data[0].artistId}}" class="form-control" id="artistId" name="artistId" required>
                     
-                    <label for="make">fName:</label>
+                    <label for="make">First Name:</label>
                     <input type="text" value="{{data[0].fName}}" class="form-control" id="fName" name="fName" pattern="[A-Za-z]{1,}" required>
                     
-                    <label for="model">lName:</label>
+                    <label for="model">Last Name:</label>
                     <input type="text" value="{{data[0].lName}}" class="form-control" id="lName" name="lName" pattern="[A-Za-z]{1,}" required>
                     
-                    <label for="model">email:</label>
+                    <label for="model">Email:</label>
                     <input type="text" value="{{data[0].email}}" class="form-control" id="email" name="email" pattern="[A-Za-z0-9.@]{1,}" required>
                 
                 </fieldset>

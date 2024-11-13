@@ -106,13 +106,13 @@
 			<legend><strong>Add Artist</strong></legend>
 			<fieldset>
                 <!-- placeholder shows ghost text, required forces an input, pattern forces input adherence -->
-				<label for="make">fName:</label>
+				<label for="make">First Name:</label>
 				<input type="text" class="form-control" id="fName" name="fName" pattern="[A-Za-z]{1,}" placeholder="" required>
 
-				<label for="model">lName:</label>
+				<label for="model">Last Name:</label>
 				<input type="text" class="form-control" id="lName" name="lName" pattern="[A-Za-z]{1,}" placeholder="" required>
 
-				<label for="model">email:</label>
+				<label for="model">Email:</label>
 				<input type="text" class="form-control" id="email" name="email" pattern="[A-Za-z0-9.@]{1,}" placeholder="" required>
 
             </fieldset>
@@ -129,13 +129,13 @@
 			<fieldset>
 				<input type="hidden" value="{{data[0].id}}" class="form-control" id="artistId" name="artistId" required>
 				
-				<label for="make">fName:</label>
+				<label for="make">First Name:</label>
 				<input type="text" class="form-control" id="fName" name="fName" pattern="[A-Za-z]{1,}" placeholder="{{data[0].fName}}" required>
 				
-				<label for="model">lName:</label>
+				<label for="model">Last Name:</label>
 				<input type="text" class="form-control" id="lName" name="lname" pattern="[A-Za-z]{1,}" placeholder="{{data[0].lName}}" required>
 				
-				<label for="year">email:</label>
+				<label for="year">Email:</label>
 				<input type="text" class="form-control" id="email" name="email" pattern="[A-Za-z0-9.@]{1,}" placeholder="{{data[0].email}}" required>
         </form>
 	</div><!--edit-->

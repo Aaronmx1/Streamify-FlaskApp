@@ -32,11 +32,24 @@
                 <fieldset>
                     <input type="hidden" value="{{data[0].likedSongsId}}" class="form-control" id="likedSongsId" name="likedSongsId" required>
 
-                    <label for="songId">Song ID:</label>
-                    <input type="number" value="{{data[0].songId}}" class="form-control" id="songId" name="songId" required>
+                    <label for="songId">Song:</label>
+                    <select class="form-control" id="songId" name="songId" required>
+                        {% for song in songs %}
+                            <option value="{{ song.songId }}" {% if data[0].songId == song.songId %} selected {% endif %}>
+                                {{ song.songName }}
+                            </option>
+                        {% endfor %}
+                    </select>
 
-                    <label for="userId">User ID:</label>
-                    <input type="number" value="{{data[0].userId}}" class="form-control" id="userId" name="userId" required>
+                    <label for="userId">Song:</label>
+                    <select class="form-control" id="userId" name="userId" required>
+                        {% for user in users %}
+                            <option value="{{ user.userId }}" {% if data[0].userId == user.userId %} selected {% endif %}>
+                                {{ user.userName }}
+                            </option>
+                        {% endfor %}
+                    </select>
+
                 </fieldset>
                 <input type="submit" value="Edit Liked Song" name="Edit_LikedSong" class="btn btn-primary" style="margin:.5rem;">
                 <a href='/likedSongs'><input class="btn" type="button" value="cancel"></a>
