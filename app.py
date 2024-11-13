@@ -479,7 +479,7 @@ def edit_album(id):                                            # set method
             return redirect('/albums')
 
 # --------------------------------------- #
-#           LikedSongs table        
+#           LikedSongs table      -- AM: COMPLETED 11/13  
 # --------------------------------------- #
 
 # CREATE  [C in CRUD]
@@ -544,7 +544,7 @@ def delete_likedSongs(id):                                          # set method
 
 # UPDATE [U in CRUD]
 @app.route('/edit_likedSong/<int:id>', methods=['POST', 'GET'])    # create route
-def edit_likedSongs(id):                                            # set method
+def edit_likedSong(id):                                            # set method
     # 2 queries are necessary, one to retrieve information for user view and the other to populate the dropdown
     if request.method == 'GET':
         # MySQL query to grab the info of the person with our passed id
@@ -571,7 +571,7 @@ def edit_likedSongs(id):                                            # set method
     # meat and potatoes of our update functionality
     if request.method == 'POST':
         # fire off if user clicks the 'Edit Person' button
-        if request.form.get("Edit_LikedSongs"):
+        if request.form.get("Edit_LikedSong"):
             # grab user form inputs
             id = request.form['likedSongsId']
             songId = request.form["songId"]
