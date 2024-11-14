@@ -122,22 +122,5 @@
 			<input class="btn" type="button" value="Cancel" onClick="browseArtist()"> 
         </form>
 	</div><!--insert-->
-	<div id="edit">
-		<!-- form to edit data in Artists-->
-		<form id="editArtist" action="/edit_artist/{{data[0].id}}" method="post">
-			<legend><strong>Edit Artist</strong></legend>
-			<fieldset>
-				<input type="hidden" value="{{data[0].id}}" class="form-control" id="artistId" name="artistId" required>
-				
-				<label for="make">First Name:</label>
-				<input type="text" class="form-control" id="fName" name="fName" pattern="[A-Za-z]{1,}" placeholder="{{data[0].fName}}" required>
-				
-				<label for="model">Last Name:</label>
-				<input type="text" class="form-control" id="lName" name="lname" pattern="[A-Za-z]{1,}" placeholder="{{data[0].lName}}" required>
-				
-				<label for="year">Email:</label>
-				<input type="text" class="form-control" id="email" name="email" pattern="[A-Za-z0-9.@]{1,}" placeholder="{{data[0].email}}" required>
-        </form>
-	</div><!--edit-->
 </body>
 </html>

@@ -78,9 +78,11 @@
     </div>
 
     <div id="insert">
+		<!-- form to INSERT new data into Users-->
         <form id="insertUser" action="/users" method="post">
             <legend><strong>Add User</strong></legend>
             <fieldset>
+                <!-- placeholder shows ghost text, required forces an input, pattern forces input adherence -->
                 <label for="fName">First Name:</label>
                 <input type="text" class="form-control" id="fName" name="fName" required>
 
@@ -93,18 +95,10 @@
                 <label for="dob">Date of Birth:</label>
                 <input type="date" class="form-control" id="dob" name="dob" required>
 
-                <label for="subscriptionId">Subscription ID:</label>
-                <input type="number" class="form-control" id="subscriptionId" name="subscriptionId" required>
-                
-                <label for="subscriptionId">Subscription:</label>
-                <select class="form-control" id="subscriptionId" name="subscriptionId" required>
-                    {% for subscription in subscriptions %}
-                        <option value="{{ subscription.subscriptionId }}">{{ subscription.subscriptionDescription }}</option>
-                    {% endfor %}
-                </select>
             </fieldset>
-            <input type="submit" value="Add Subscription" class="btn btn-primary">
-            <input type="button" value="Cancel" onClick="browseUser()" class="btn">
+            <!-- Create 'Add Artist' and 'Cancel' buttons -->
+			<input type="submit" value="Add User" name="Add_User" class="btn btn-primary" style="margin:.5rem;">
+			<input class="btn" type="button" value="Cancel" onClick="browseUser()"> 
         </form>
     </div>
 </body>

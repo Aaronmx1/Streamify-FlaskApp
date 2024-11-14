@@ -81,13 +81,23 @@
         <form id="insertLikedSong" action="/likedSongs" method="post">
             <legend><strong>Add Liked Song</strong></legend>
             <fieldset>
-                <label for="songId">Song ID:</label>
-                <input type="number" class="form-control" id="songId" name="songId" required>
+                
+                <label for="songId">Song:</label>
+                <select class="form-control" id="songId" name="songId" required>
+                    {% for song in songs %}
+                        <option value="{{ song.songId }}">{{ song.songName }}</option>
+                    {% endfor %}
+                </select>
 
-                <label for="userId">User ID:</label>
-                <input type="number" class="form-control" id="userId" name="userId" required>
+                <label for="userId">User:</label>
+                <select class="form-control" id="userId" name="userId" required>
+                    {% for user in users %}
+                        <option value="{{ user.userId }}">{{ user.userName }}</option>
+                    {% endfor %}
+                </select>
+
             </fieldset>
-            <input type="submit" value="Add Liked Song" class="btn btn-primary">
+            <input type="submit" value="Add LikedSong" name="Add_LikedSong" class="btn btn-primary">
             <input type="button" value="Cancel" onClick="browseLikedSong()" class="btn">
         </form>
     </div>

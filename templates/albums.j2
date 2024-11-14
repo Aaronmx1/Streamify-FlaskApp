@@ -83,9 +83,11 @@
     </div>
 
     <div id="insert">
+        <!-- form to INSERT new data into Albums-->
         <form id="insertAlbum" action="/albums" method="post">
             <legend><strong>Add Album</strong></legend>
             <fieldset>
+                <!-- placeholder shows ghost text, required forces an input, pattern forces input adherence -->
                 <label for="albumName">Album Name:</label>
                 <input type="text" class="form-control" id="albumName" name="albumName" required>
 
@@ -105,7 +107,9 @@
                 <label for="numberOfSongs">Number of Songs:</label>
                 <input type="number" class="form-control" id="numberOfSongs" name="numberOfSongs" required>
             </fieldset>
-            <input type="submit" value="Add Album" class="btn btn-primary">
+
+            <!-- Create 'Add Album' and 'Cancel' buttons -->
+            <input type="submit" value="Add Album" name="Add_Album" class="btn btn-primary">
             <input type="button" value="Cancel" onClick="browseAlbum()" class="btn">
         </form>
     </div>

@@ -20,53 +20,17 @@ SET FOREIGN_KEY_CHECKS=0;
 SET AUTOCOMMIT=0;
 
 -- Drop existing tables to re-create tables
-DROP TABLE IF EXISTS AddedSongs;
-DROP TABLE IF EXISTS Collaborations;
 DROP TABLE IF EXISTS Artists;
-DROP TABLE IF EXISTS Playlists;
 DROP TABLE IF EXISTS Songs;
 DROP TABLE IF EXISTS LikedSongs;
 DROP TABLE IF EXISTS Users;
 DROP TABLE IF EXISTS Albums;
-DROP TABLE IF EXISTS Subscriptions;
 
 
 /*-------------------------------------------
 *               CREATE tables
 */-------------------------------------------
 
--- AddedSongs table handles M:N relationship between Playlists and Songs
-CREATE TABLE AddedSongs (
-    addedSongsId int(11) NOT NULL AUTO_INCREMENT,
-    playlistId int(11) NOT NULL,
-    songId int(11) NOT NULL,
-    PRIMARY KEY (addedSongsId),
-    -- MUL: The column has a non-unique index, meaning it can contain duplicate values, but it's indexed for faster searches.
-    -- KEY: Lists attribute as a key to be used as an index for foreign key matching
-    CONSTRAINT FOREIGN KEY (playlistId) REFERENCES Playlists (playlistId)
-        -- ON UPDATE CASCADE updated value and updates table
-        ON UPDATE CASCADE
-        -- ON DELETE RESTRICT will restrict deletions from being reflected on this table
-        ON DELETE RESTRICT,    
-    CONSTRAINT FOREIGN KEY (songId) REFERENCES Songs (songId)
-        ON UPDATE CASCADE
-        ON DELETE RESTRICT
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
-
--- Collaborations table handles M:N relationship between Artists and Songs
-CREATE TABLE Collaborations (
-    collaborationId int(11) NOT NULL AUTO_INCREMENT,
-    songId int(11) NOT NULL,
-    artistId int(11) NOT NULL,
-    primary key (collaborationId),
-    CONSTRAINT FOREIGN KEY (artistId) REFERENCES Artists(artistId)
-        ON UPDATE CASCADE
-        ON DELETE RESTRICT,
-    CONSTRAINT FOREIGN KEY (songId) REFERENCES Songs(songId)
-        ON UPDATE CASCADE
-        ON DELETE RESTRICT
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- Artists table contains artist details
 CREATE TABLE Artists (
@@ -77,17 +41,28 @@ CREATE TABLE Artists (
     PRIMARY KEY (artistId)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
--- Playlists table contains system and user generated playlists
-CREATE TABLE Playlists (
-    playlistId int(11) NOT NULL AUTO_INCREMENT,
-    playlistName varchar(50) NOT NULL,
-    playlistDescription varchar(50) NOT NULL,
-    userId int(11) NOT NULL,
+-- Users table which contains company user base
+CREATE TABLE Users (
+    userId int(11) NOT NULL AUTO_INCREMENT,
+    fName varchar(50) NOT NULL,
+    lName varchar(50) NOT NULL,
+    email varchar(50) NOT NULL UNIQUE,
+    dob date NOT NULL,
+    PRIMARY KEY (userId)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- Albums table which contains collections of songs from artists
+CREATE TABLE Albums (
+    albumId int(11) NOT NULL AUTO_INCREMENT,
+    albumName varchar(50) NOT NULL,
+    recordStudio varchar(50) NOT NULL,
+    yearReleased int(11) NOT NULL,
+    artistId int(11) NOT NULL,
     numberOfSongs int(11) NOT NULL DEFAULT 0,
-    PRIMARY KEY (playlistId),
-    CONSTRAINT FOREIGN KEY (userId) REFERENCES Users(userId)
+    PRIMARY KEY (albumId),
+    CONSTRAINT FOREIGN KEY (artistId) REFERENCES Artists (artistId)
         ON UPDATE CASCADE
-        ON DELETE RESTRICT
+        ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- Songs table contains artist created songs
@@ -102,10 +77,10 @@ CREATE TABLE Songs (
     PRIMARY KEY (songId),
     CONSTRAINT FOREIGN KEY (albumId) REFERENCES Albums (albumId)
         ON UPDATE CASCADE
-        ON DELETE RESTRICT,
+        ON DELETE CASCADE,
     CONSTRAINT FOREIGN KEY (artistId) REFERENCES Artists (artistId)
         ON UPDATE CASCADE
-        ON DELETE RESTRICT
+        ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- Handles M:N relationship between Users and Songs
@@ -116,103 +91,41 @@ CREATE TABLE LikedSongs (
     PRIMARY KEY (likedSongsId),
     CONSTRAINT FOREIGN KEY (songId) REFERENCES Songs (songId)
         ON UPDATE CASCADE
-        ON DELETE RESTRICT,
+        ON DELETE CASCADE,
     CONSTRAINT FOREIGN KEY (userId) REFERENCES Users (userId)
         ON UPDATE CASCADE
-        ON DELETE RESTRICT
+        ON DELETE CASCADE 
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
--- Users table which contains company user base
-CREATE TABLE Users (
-    userId int(11) NOT NULL AUTO_INCREMENT,
-    fName varchar(50) NOT NULL,
-    lName varchar(50) NOT NULL,
-    email varchar(50) NOT NULL UNIQUE,
-    dob date NOT NULL,
-    subscriptionId int(11) NOT NULL,
-    PRIMARY KEY (userId),
-    CONSTRAINT FOREIGN KEY (subscriptionId) REFERENCES Subscriptions (subscriptionId)
-        ON UPDATE CASCADE
-        ON DELETE RESTRICT
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
--- Albums table which contains collections of songs from artists
-CREATE TABLE Albums (
-    albumId int(11) NOT NULL AUTO_INCREMENT,
-    albumName varchar(50) NOT NULL,
-    recordStudio varchar(50) NOT NULL,
-    yearReleased int(11) NOT NULL,
-    artistId int(11) NOT NULL,
-    numberOfSongs int(11) NOT NULL DEFAULT 0,
-    PRIMARY KEY (albumId),
-    CONSTRAINT FOREIGN KEY (artistId) REFERENCES Artists (artistId)
-        ON UPDATE CASCADE
-        ON DELETE RESTRICT
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
--- Subscriptions table handles types of plans user base is subscribed to
-CREATE TABLE Subscriptions (
-    subscriptionId int(11) NOT NULL AUTO_INCREMENT,
-    subscriptionDescription varchar(50) NOT NULL UNIQUE,
-    price decimal(10,2) NOT NULL,
-    numberOfSubscriptions int(11) DEFAULT 0,
-    PRIMARY KEY (subscriptionId)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
 
 
 /*-------------------------------------------
 *       INSERT into tables
 */-------------------------------------------
 
--- Insert data into Subscriptions table
-INSERT INTO Subscriptions (
-    subscriptionDescription,
-    price,
-    numberOfSubscriptions
-) VALUES (
-    'Premium Individual',
-    15,
-    0
-),
-(
-    'Premium Family',
-    30,
-    0
-),
-(
-    'Free',
-    0,
-    0
-);
 
 -- Insert data into Users table
 INSERT INTO Users (
     fName,
     lName,
     email,
-    dob,
-    subscriptionId
+    dob
 ) VALUES (
     'Tim',
     'Newell',
     'tnewell@gmail.com',
-    '2023-03-04',
-    ( SELECT subscriptionId from Subscriptions WHERE subscriptionDescription = 'Premium Individual' )
+    '2023-03-04'
 ),
 (
     'Aaron',
     'Martinez',
     'amartinez@gmail.com',
-    '2023-05-06',
-    ( SELECT subscriptionId from Subscriptions WHERE subscriptionDescription = 'Premium Family' )
+    '2023-05-06'
 ),
 (
     'Elon',
     'Musk',
     'emusk@gmail.com',
-    '2024-02-02',
-    ( SELECT subscriptionId from Subscriptions WHERE subscriptionDescription = 'Free' )
+    '2024-02-02'
 );
 
 -- Insert data into Artists table
@@ -343,76 +256,6 @@ INSERT INTO Songs(
     0
 );
 
--- Insert data into Collaborations table
-INSERT INTO Collaborations (
-    songId,
-    artistId
-) VALUES (
-    ( SELECT songId from Songs WHERE songName = 'Fortnight' ),
-    ( SELECT artistId from Artists WHERE fName = 'Post' and lName = 'Malone' )
-),
-(
-    ( SELECT songId from Songs WHERE songName = 'Gravity' ),
-    ( SELECT artistId from Artists WHERE fName = 'Ben' and lName = 'Rector' )
-),
-(
-    ( SELECT songId from Songs WHERE songName = 'Redbone' ),
-    ( SELECT artistId from Artists WHERE fName = 'John' and lName = 'Mayer' )
-);
-
--- Insert data into Playlists table
-INSERT INTO Playlists (
-    playlistName,
-    playlistDescription,
-    userId,
-    numberOfSongs
-) VALUES (
-    'Good Songs',
-    'Some good songs that I like',
-    ( SELECT userId from Users WHERE email = 'tnewell@gmail.com' ),
-    4
-),
-(
-    'Bad Songs',
-    "Songs that I don't like",
-    ( SELECT userId from Users WHERE email = 'emusk@gmail.com' ),
-    2
-),
-(
-    'Other songs',
-    'Various Songs',
-    ( SELECT userId from Users WHERE email = 'amartinez@gmail.com' ),
-    3
-);
-
--- Insert data into AddedSongs table
-INSERT INTO AddedSongs (
-    playlistId,
-    songId
-) VALUES (
-    ( SELECT playlistId from Playlists WHERE playlistName = 'Good Songs' ),
-    ( SELECT songId from Songs WHERE songName = 'Gravity' )
-),
-(
-    ( SELECT playlistId from Playlists WHERE playlistName = 'Good Songs' ),
-    ( SELECT songId from Songs WHERE songName = 'Redbone' )    
-),
-(
-    ( SELECT playlistId from Playlists WHERE playlistName = 'Good Songs' ),
-    ( SELECT songId from Songs WHERE songName = 'Drive' )
-),
-(
-    ( SELECT playlistId from Playlists WHERE playlistName = 'Good Songs' ),
-    ( SELECT songId from Songs WHERE songName = "Lover You Should've Come Over" )
-),
-(
-    ( SELECT playlistId from Playlists where playlistName = 'Bad Songs' ),
-    ( SELECT songId from Songs WHERE songName = "Lover You Should've Come Over" )
-),
-(
-    ( SELECT playlistId from Playlists where playlistName = 'Bad Songs' ),
-    ( SELECT songId from Songs WHERE songName = 'Fortnight' )
-);
 
 -- Insert data into LikedSongs table
 INSERT INTO LikedSongs (

@@ -1,10 +1,6 @@
-from dotenv import load_dotenv, find_dotenv
-load_dotenv(find_dotenv())
-
 from flask import Flask, render_template, json
 from flask import redirect  # pip install Flask-SSLify
 from flask_mysqldb import MySQL # pip install MySQL
-import MySQLdb
 from flask import request # pip install requests
 import os
 import database.db_connector as db
@@ -13,8 +9,8 @@ import database.db_connector as db
 
 # Configuration
 
+# Local DB credentials
 app = Flask(__name__)
-
 app.config['MYSQL_HOST'] = os.environ.get('MYSQL_HOST')
 app.config['MYSQL_USER'] = os.environ.get('MYSQL_USER')
 app.config['MYSQL_PASSWORD'] = os.environ.get('MYSQL_PASSWORD')
@@ -22,6 +18,7 @@ app.config['MYSQL_DB'] = os.environ.get('MYSQL_DATABASE')
 app.config['MYSQL_PORT'] = int(os.environ.get('MYSQL_PORT'))
 app.config["MYSQL_CURSORCLASS"] = "DictCursor"          # required for tuple object to be converted to dictionary
 
+# OSU server credentials
 #app.config['MYSQL_HOST'] = "classmysql.engr.oregonstate.edu"
 #app.config['MYSQL_USER'] = "cs340_newellti"
 #app.config['MYSQL_PASSWORD'] = "cKUcH33eJNqf"
@@ -33,7 +30,7 @@ mysql = MySQL(app)
 
 # Create connection to database
 
-# db_connection = db.connect_to_database()
+db_connection = db.connect_to_database()
 
 # Routes 
 
@@ -87,7 +84,7 @@ def view_artists():
     # Grab bsg_people data so we send it to our template to display
     if request.method == 'GET':
         # mySQL query to grab all the people in bsg_people
-        query = "SELECT artistId, fName AS 'First Name', lName AS 'Last Name', email AS 'Email' FROM Artists"
+        query = "SELECT artistId, fName, lName, email FROM Artists"
         cur = mysql.connection.cursor()
         cur.execute(query)
         data = cur.fetchall()
@@ -192,7 +189,7 @@ def view_songs():
     # Grab bsg_people data so we send it to our template to display
     if request.method == 'GET':
         # mySQL query to grab all the people in Songs
-        query = "SELECT Songs.songId, Songs.songName AS 'Song Name', Albums.albumName AS 'Album Name', CONCAT(Artists.fName, ' ', Artists.lName) AS 'Artist Name', Songs.genre AS 'Genre', Songs.songLength AS 'Song Length', Songs.totalStreams AS 'Total Streams' FROM Songs INNER JOIN Albums ON Songs.albumId = Albums.albumId INNER JOIN Artists ON Songs.artistId = Artists.artistId"
+        query = "SELECT songId, songName, albumId, artistId, genre, songLength, totalStreams FROM Songs"
         cur = mysql.connection.cursor()
         cur.execute(query)
         data = cur.fetchall()
@@ -268,9 +265,9 @@ def edit_song(id):                                            # set method
             totalStreams = request.form["totalStreams"]
 
             # account for null songLength and totalSteams
-            query = "UPDATE Songs SET songName = %s, albumId = (SELECT albumId FROM Albums WHERE albumId = %s), artistId = (SELECT artistId FROM Artists Where artistId = %s), genre = %s, songLength = %s, totalStreams = %s WHERE songId = %s"   # create desired query
+            query = "UPDATE Songs SET songName = %s, albumId = (SELECT albumId FROM albums WHERE albumId = %s), artistId = (SELECT artistId FROM Artists Where artistId = %s), genre = %s, songLength = %s, totalStreams = %s WHERE songId = %s"   # create desired query
             cur = mysql.connection.cursor()
-            cur.execute(query, (songName, albumId, artistId, genre, songLength, totalStreams, id))          # execute desired query
+            cur.execute(query, (songName, albumId, artistId, genre, songLength, totalStreams))          # execute desired query
             mysql.connection.commit()   
 
             # redirect back to people page after we execute the update query
@@ -293,11 +290,12 @@ def view_users():
             lName = request.form["lName"]
             email = request.form["email"]
             dob = request.form["dob"]
+            subscriptionId = request.form["subscriptionId"]
 
             # MySQL query to insert a new person into bsg_people with our form inputs
-            query = "INSERT INTO Users (fName, lName, email, dob) VALUES (%s, %s, %s, %s)"
+            query = "INSERT INTO Artists (fName, lName, email, dob, subscriptionId) VALUES (%s, %s, %s, %s, %s)"
             cur = mysql.connection.cursor()
-            cur.execute(query, (fName, lName, email, dob))
+            cur.execute(query, (fName, lName, email, dob, subscriptionId))
             mysql.connection.commit()
         
             # redirect back to people page
@@ -306,13 +304,19 @@ def view_users():
     # Grab bsg_people data so we send it to our template to display
     if request.method == 'GET':
         # mySQL query to grab all the people in Users
-        query = "SELECT userId, fName AS 'First Name', lName AS 'Last Name', email AS 'Email', dob AS 'DOB' FROM Users"
+        query = "SELECT * FROM Users"
         cur = mysql.connection.cursor()
         cur.execute(query)
         data = cur.fetchall()
 
+        # mySQL query to grab Subscription id/name for our dropdown
+        query2 = "SELECT subscriptionId, subscriptionDescription FROM Subscriptions"
+        cur = mysql.connection.cursor()
+        cur.execute(query2)
+        subscription_data = cur.fetchall()
+
         # render edit_people page passing our query data and homeworld data to the edit_people template
-        return render_template("users.j2", data=data)
+        return render_template("users.j2", data=data, subscriptions=subscription_data)
 
 
 # DELETE [D in CRUD]
@@ -341,8 +345,14 @@ def edit_user(id):                                            # set method
         cur.execute(query)                                      # execute desired query
         data = cur.fetchall()
 
+        # mySQL query to grab Artists id/name for our dropdown
+        query2 = "SELECT subscriptionId, subscriptionDescription FROM Subscriptions"
+        cur = mysql.connection.cursor()
+        cur.execute(query2)
+        subscription_data = cur.fetchall()
+
         # render edit_people page passing our query data and homeworld data to the edit_people template
-        return render_template("edit_user.j2", data=data)
+        return render_template("edit_user.j2", data=data, subscriptions=subscription_data)
 
     # meat and potatoes of our update functionality
     if request.method == 'POST':
@@ -354,11 +364,12 @@ def edit_user(id):                                            # set method
             lName = request.form["lName"]
             email = request.form["email"]
             dob = request.form["dob"]
+            subscriptionId = request.form["subscriptionId"]
 
             # mySQL query to update the attributes of person with our passed id value
-            query = "UPDATE Users SET fName = %s, lName = %s, email = %s, dob = %s WHERE userId = %s"   # create desired query
+            query = "UPDATE Users SET fName = %s, lName = %s, email = %s, dob = %s, subscriptionId = (SELECT subscriptionId FROM Subscriptions WHERE subscriptionId = %s) WHERE userId = %s"   # create desired query
             cur = mysql.connection.cursor()
-            cur.execute(query, (fName, lName, email, dob, id))          # execute desired query
+            cur.execute(query, (fName, lName, email, dob, subscriptionId, id))          # execute desired query
             mysql.connection.commit()
 
             # redirect back to people page after we execute the update query
@@ -389,13 +400,6 @@ def view_albums():
                 cur = mysql.connection.cursor()
                 cur.execute(query, (albumName, recordStudio, yearReleased, artistId))
                 mysql.connection.commit()
-
-            else:
-                # MySQL query to insert a new person into bsg_people with our form inputs
-                query = "INSERT INTO Albums (albumName, recordStudio, yearReleased, artistId, numberOfSongs) VALUES (%s, %s, %s, %s, %s)"
-                cur = mysql.connection.cursor()
-                cur.execute(query, (albumName, recordStudio, yearReleased, artistId, numberOfSongs))
-                mysql.connection.commit()
         
             # redirect back to people page
             return redirect('/albums')
@@ -403,7 +407,7 @@ def view_albums():
     # Grab bsg_people data so we send it to our template to display
     if request.method == 'GET':
         # mySQL query to grab all the people in Albums
-        query = "SELECT Albums.albumId, Albums.albumName AS 'Album Name', Albums.recordStudio AS 'Record Studio', Albums.yearReleased AS 'Year Released', CONCAT(Artists.fName, ' ', Artists.lName) AS 'Artist Name', Albums.numberOfSongs AS 'Number of Songs' FROM Albums INNER JOIN Artists ON Albums.artistId = Artists.artistId"
+        query = "SELECT albumId, albumName, recordStudio, yearReleased, artistId, numberOfSongs FROM Albums"
         cur = mysql.connection.cursor()
         cur.execute(query)
         data = cur.fetchall()
@@ -485,7 +489,7 @@ def view_likedSongs():
     # insert a person into the bsg_people entity
     if request.method == 'POST':
         # fire off if user presses the Add Person button
-        if request.form.get("Add_LikedSong"):
+        if request.form.get("Add_Album"):
             # grab user form inputs
             songId = request.form["songId"]
             userId = request.form["userId"]
@@ -501,8 +505,8 @@ def view_likedSongs():
 
     # Grab bsg_people data so we send it to our template to display
     if request.method == 'GET':
-        # mySQL query to grab all the people in LikedSongs
-        query = "SELECT LikedSongs.likedSongsId, Songs.songName AS 'Song Name', CONCAT(Users.fName, ' ', Users.lName) AS Username FROM LikedSongs INNER JOIN Songs ON LikedSongs.songId = Songs.songId INNER JOIN Users ON LikedSongs.userId = Users.userId"
+        # mySQL query to grab all the people in Albums
+        query = "SELECT likedSongsId, songId, userId FROM LikedSongs"
         cur = mysql.connection.cursor()
         cur.execute(query)
         data = cur.fetchall()
@@ -514,7 +518,7 @@ def view_likedSongs():
         songs_data = cur.fetchall()
 
         # mySQL query to grab Users id/name for our dropdown
-        query3 = "SELECT userId, CONCAT(fName, ' ', lName) as userName FROM Users"
+        query3 = "SELECT userId, CONCAT(fName, ' ', lName) FROM Users"
         cur = mysql.connection.cursor()
         cur.execute(query3)
         users_data = cur.fetchall()
@@ -525,8 +529,8 @@ def view_likedSongs():
 
 # DELETE [D in CRUD]
 # user.j2 href is routed here and supplies associated {{item.id}} to delete song by their id
-@app.route('/delete_likedSong/<int:id>')                           # create route
-def delete_likedSong(id):                                          # set method
+@app.route('/delete_likedSongs/<int:id>')                           # create route
+def delete_likedSongs(id):                                          # set method
     # MySQL query to delete the person with our passed id
     # grab form inputs
     query = "DELETE FROM LikedSongs WHERE likedSongsId = %s;"           # create desired query
@@ -536,7 +540,7 @@ def delete_likedSong(id):                                          # set method
 
     # redirect back to people page
     # /delete_people route exists only to perform deletion and is itself not a page that displays to the user
-    return redirect('/likedSongs')                                  # load page
+    return redirect('/albums')                                  # load page
 
 # UPDATE [U in CRUD]
 @app.route('/edit_likedSong/<int:id>', methods=['POST', 'GET'])    # create route
@@ -581,6 +585,200 @@ def edit_likedSong(id):                                            # set method
 
             # redirect back to people page after we execute the update query
             return redirect('/likedSongs')
+
+
+# --------------------------------------- #
+#           Subcriptions table      -- AM: TO BE DROPPED
+# --------------------------------------- #
+
+# CREATE  [C in CRUD]
+@app.route('/subscriptions', methods=['POST', 'GET'])
+def view_subscriptions():
+# Separate out the request methods, in this case this is for a POST
+    # insert a person into the bsg_people entity
+    if request.method == 'POST':
+        # fire off if user presses the Add Person button
+        if request.form.get("Add_Subscriptions"):
+            # grab user form inputs
+            subscriptionDescription = request.form["subscriptionDescription"]
+            price = request.form["price"]
+            numberOfSubscriptions = request.form["numberOfSubscriptions"]
+
+            if numberOfSubscriptions == '0': 
+                # MySQL query to insert a new person into bsg_people with our form inputs
+                query = "INSERT INTO Artists (subscriptionDescription, price, numberOfSubscriptions = 0) VALUES (%s, %s)"
+                cur = mysql.connection.cursor()
+                cur.execute(query, (subscriptionDescription, price))
+                mysql.connection.commit()
+        
+            # redirect back to people page
+            return redirect('/subscriptions')
+
+    # Grab bsg_people data so we send it to our template to display
+    if request.method == 'GET':
+        # mySQL query to grab all the people in bsg_people
+        query = "SELECT subscriptionId, subscriptionDescription, price, numberOfSubscriptions FROM Subscriptions"
+        cur = mysql.connection.cursor()
+        cur.execute(query)
+        data = cur.fetchall()
+        
+        # Debugging output
+        #print("Data fetched from database:", data)
+
+        # render edit_people page passing our query data and homeworld data to the edit_people template
+        return render_template("subscriptions.j2", data=data)
+
+
+# DELETE [D in CRUD]
+# user.j2 href is routed here and supplies associated {{item.id}} to delete song by their id
+@app.route('/delete_subscription/<int:id>')                           # create route
+def delete_subscription(id):                                          # set method
+    # MySQL query to delete the person with our passed id
+    # grab form inputs
+    query = "DELETE FROM Subscriptions WHERE subscriptionId = %s;"           # create desired query
+    cur = mysql.connection.cursor()
+    cur.execute(query, (id,))                                   # execute desired query.  Including a comma after id in (id,) is necessary otherwise an error will be produced
+    mysql.connection.commit()
+
+    # redirect back to people page
+    # /delete_people route exists only to perform deletion and is itself not a page that displays to the user
+    return redirect('/subscriptions')                                  # load page
+
+# UPDATE [U in CRUD]
+@app.route('/edit_subscription/<int:id>', methods=['POST', 'GET'])    # create route
+def edit_subscription(id):                                            # set method
+    # 2 queries are necessary, one to retrieve information for user view and the other to populate the dropdown
+    if request.method == 'GET':
+        # MySQL query to grab the info of the person with our passed id
+        query = "SELECT * FROM Subscriptions WHERE subscriptionId = %s" % (id) # create desired query      % (id) obtains edit_people(id) and passes it to %s in query
+        cur = mysql.connection.cursor()
+        cur.execute(query)                                      # execute desired query
+        data = cur.fetchall()
+
+        # render edit_people page passing our query data and homeworld data to the edit_people template
+        return render_template("edit_subscription.j2", data=data)
+
+    # meat and potatoes of our update functionality
+    if request.method == 'POST':
+        # fire off if user clicks the 'Edit Person' button
+        if request.form.get("Edit_Subscription"):
+            # grab user form inputs
+            subscriptionDescription = request.form["subscriptionDescription"]
+            price = request.form["price"]
+            numberOfSubscriptions = request.form["numberOfSubscriptions"]
+
+            # mySQL query to update the attributes of person with our passed id value
+            query = "UPDATE Subscriptions SET subscriptionDescription = %s, price = %s, numberOfSubscriptions = %s WHERE subscriptionId = %s"   # create desired query
+            cur = mysql.connection.cursor()
+            cur.execute(query, (id, subscriptionDescription, price, numberOfSubscriptions))          # execute desired query
+            mysql.connection.commit()
+
+            # redirect back to people page after we execute the update query
+            return redirect('/subscriptions')
+
+
+# --------------------------------------- #
+#           Playlists table     -- TABLE DROPPED
+# --------------------------------------- #
+
+# CREATE  [C in CRUD]
+@app.route('/playlists', methods=['POST', 'GET'])
+def view_playlists():
+# Separate out the request methods, in this case this is for a POST
+    # insert a person into the bsg_people entity
+    if request.method == 'POST':
+        # fire off if user presses the Add Person button
+        if request.form.get("Add_Playlist"):
+            # grab user form inputs
+            playlistName = request.form["playlistName"]
+            playlistDescription = request.form["playlistDescription"]
+            userId = request.form["userId"]
+            numberOfSongs = request.form["numberOfSongs"]
+
+            # capture user input            
+            query = "INSERT INTO Playlists (playlistName, playlistDescription, userId, numberOfSongs) VALUES (%s, %s, %s, %s)"
+            cur = mysql.connection.cursor()
+            cur.execute(query, (playlistName, playlistDescription, userId, numberOfSongs))
+            mysql.connection.commit()
+        
+            # redirect back to people page
+            return redirect('/playlists')
+
+    # Grab bsg_people data so we send it to our template to display
+    if request.method == 'GET':
+        # mySQL query to grab all the details in Playlists
+        query = "SELECT playlistId, playlistName, playlistDescription, userId, numberOfSongs FROM Playlists"
+        cur = mysql.connection.cursor()
+        cur.execute(query)
+        data = cur.fetchall()
+        
+        # mySQL query to grab all the userId and userName in Users
+        query = "SELECT userId, CONCAT(fName, ' ', lName) FROM Users"
+        cur = mysql.connection.cursor()
+        cur.execute(query)
+        data = cur.fetchall()
+
+        # render edit_people page passing our query data and homeworld data to the edit_people template
+        return render_template("playlists.j2", data=data)
+
+
+# DELETE [D in CRUD]
+# people.j2 href is routed here and supplies associated {{item.id}} to delete people by their id
+@app.route('/delete_playlist/<int:id>')                           # create route
+def delete_playlist(id):                                          # set method
+    # MySQL query to delete the person with our passed id
+    # grab form inputs
+    query = "DELETE FROM Playlists WHERE playlistId = %s;"           # create desired query
+    cur = mysql.connection.cursor()
+    cur.execute(query, (id,))                                   # execute desired query.  Including a comma after id in (id,) is necessary otherwise an error will be produced
+    mysql.connection.commit()
+
+    # redirect back to people page
+    # /delete_people route exists only to perform deletion and is itself not a page that displays to the user
+    return redirect('/playlists')                                  # load page
+
+# UPDATE [U in CRUD]
+@app.route('/edit_playlist/<int:id>', methods=['POST', 'GET'])    # create route
+def edit_playlist(id):                                            # set method
+    # 2 queries are necessary, one to retrieve information for user view and the other to populate the dropdown
+    if request.method == 'GET':
+        # MySQL query to grab the info of the person with our passed id
+        query = "SELECT * FROM Playlists WHERE playlistId = %s" % (id) # create desired query      % (id) obtains edit_people(id) and passes it to %s in query
+        cur = mysql.connection.cursor()
+        cur.execute(query)                                      # execute desired query
+        data = cur.fetchall()
+
+        # render edit_people page passing our query data and homeworld data to the edit_people template
+        return render_template("edit_playlist.j2", data=data)
+
+    # meat and potatoes of our update functionality
+    if request.method == 'POST':
+        # fire off if user clicks the 'Edit Person' button
+        if request.form.get("Edit_Playlist"):
+            # grab user form inputs
+            id = request.form['playlistId']
+            playlistName = request.form['playlistName']
+            playlistDescription = request.form['playlistDescription']
+            userId = request.form['userId']
+            numberOfSongs = request.form['numberOfSongs']
+
+            # account for null numberOfSongs
+            if numberOfSongs == "":
+                # mySQL query to update the attributes of person with our passed id value
+                query = "UPDATE Playlists SET playlistName = %s, playlistDescription = %s, userId = %s, numberOfSongs = 0  WHERE playlistId = %s"   # create desired query
+                cur = mysql.connection.cursor()
+                cur.execute(query, (playlistName, playlistDescription, userId, id))          # execute desired query
+                mysql.connection.commit()
+
+            # no null inputs
+            else:
+                query = "UPDATE Playlists SET playlistName = %s, playlistDescription = %s, userId = %s, numberOfSongs = %s WHERE playlistId = %s"
+                cur = mysql.connection.cursor()
+                cur.execute(query, (playlistName, playlistDescription, userId, numberOfSongs, id))
+                mysql.connection.commit()
+
+            # redirect back to people page after we execute the update query
+            return redirect('/playlists')
 
 
 

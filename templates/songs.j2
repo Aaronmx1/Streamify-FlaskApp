@@ -103,17 +103,25 @@
 	<div id="insert">
 		<!-- form to INSERT new data into Songs-->
 		<form id="insertSong" action="/songs" method="post">
-			<legend><strong>Add Artist</strong></legend>
+			<legend><strong>Add Song</strong></legend>
 			<fieldset>
                 <!-- placeholder shows ghost text, required forces an input, pattern forces input adherence -->
 				<label for="make">songName:</label>
 				<input type="text" class="form-control" id="songName" name="songName" pattern="[A-Za-z0-9.@/s]{1,}" placeholder="" required>
 
-				<label for="model">albumId:</label>
-				<input type="text" class="form-control" id="albumId" name="albumId" pattern="[0-9]{1,}" placeholder="" required>
+                <label for="albumId">Album:</label>
+                <select class="form-control" id="albumId" name="albumId" required>
+                    {% for album in albums %}
+                        <option value="{{ album.albumId }}">{{ album.albumName }}</option>
+                    {% endfor %}
+                </select>
 
-				<label for="model">artistId:</label>
-				<input type="text" class="form-control" id="artistId" name="artistId" pattern="[0-9]{1,}" placeholder="" required>
+                <label for="artistId">Artist:</label>
+                <select class="form-control" id="artistId" name="artistId" required>
+                    {% for artist in artists %}
+                        <option value="{{ artist.artistId }}">{{ artist.artistName }}</option>
+                    {% endfor %}
+                </select>
 
 				<label for="model">genre:</label>
 				<input type="text" class="form-control" id="genre" name="genre" pattern="[A-Za-z/s]{1,}" placeholder="" required>
@@ -131,31 +139,6 @@
 			<input class="btn" type="button" value="Cancel" onClick="browseSong()"> 
         </form>
 	</div><!--insert-->
-	<div id="edit">
-		<!-- form to edit data in Songs-->
-		<form id="editSong" action="/edit_song/{{data[0].id}}" method="post">
-			<legend><strong>Edit Song</strong></legend>
-			<fieldset>
-				<input type="hidden" value="{{data[0].id}}" class="form-control" id="songId" name="songId" required>
-				
-				<label for="make">songName:</label>
-				<input type="text" class="form-control" id="songName" name="songName" pattern="[A-Za-z0-9.@/s]{1,}" placeholder="{{data[0].songName}}" required>
-				
-				<label for="model">albumId:</label>
-				<input type="text" class="form-control" id="albumId" lName="albumId" pattern="[0-9]{1,}" placeholder="{{data[0].albumId}}" required>
-				
-				<label for="year">artistId:</label>
-				<input type="text" class="form-control" id="artistId" name="artistId" pattern="[0-9]{1,}" placeholder="{{data[0].artistId}}" required>
 
-				<label for="year">genre:</label>
-				<input type="text" class="form-control" id="genre" name="genre" pattern="[A-Za-z0-9.@/s]{1,}" placeholder="{{data[0].genre}}" required>
-
-				<label for="year">songLength:</label>
-				<input type="text" class="form-control" id="songLength" name="songLength" pattern="[0-9.@/s]{1,}" placeholder="{{data[0].songLength}}" required>
-
-				<label for="year">totalStreams:</label>
-				<input type="text" class="form-control" id="totalStreams" name="totalStreams" pattern="[0-9]{1,}" placeholder="{{data[0].totalStreams}}" required>
-        </form>
-	</div><!--edit-->
 </body>
 </html>
