@@ -38,17 +38,11 @@ experience for both administrators and users.
 **Entities**
 
   ● Songs: This table stores information about individual songs
-  
     ○ Attributes
-    
       ■ songId: int, Primary Key, auto_increment, not NULL
-      
       ■ songName: varchar, not NULL
-      
       ■ albumId: int, not NULL, Foreign Key
-      
       ■ artistId: int, not NULL, Foreign Key
-      
       ■ genre: varchar, not NULL
       
       ■ songLength: time, NOT NULL
