@@ -28,6 +28,7 @@ experience for both administrators and users.
 
 
 **B. Database Outline**
+
 Entities
   ● Songs: This table stores information about individual songs
     ○ Attributes
