@@ -35,16 +35,26 @@ experience for both administrators and users.
 
 **B. Database Outline**
 
-Entities
+**Entities**
+
   ● Songs: This table stores information about individual songs
+  
     ○ Attributes
+    
       ■ songId: int, Primary Key, auto_increment, not NULL
+      
       ■ songName: varchar, not NULL
+      
       ■ albumId: int, not NULL, Foreign Key
+      
       ■ artistId: int, not NULL, Foreign Key
+      
       ■ genre: varchar, not NULL
+      
       ■ songLength: time, NOT NULL
+      
       ■ totalStreams: int, not NULL
+      
     ○ Relationships
       ■ A M:1 relationship exists between Songs and Albums.
       albumId in Songs references the Albums table.
