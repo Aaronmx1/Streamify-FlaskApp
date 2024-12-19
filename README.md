@@ -38,12 +38,12 @@ experience for both administrators and users.
 **Entities**
 
   ● Songs: This table stores information about individual songs <br>
-    ○ &nbsp;Attributes<br>
-      ■ &nbsp;songId: int, Primary Key, auto_increment, not NULL<br>
-      ■ &nbsp;songName: varchar, not NULL<br>
-      ■ &nbsp;albumId: int, not NULL, Foreign Key<br>
-      ■ &nbsp;artistId: int, not NULL, Foreign Key<br>
-      ■ &nbsp;&nbsp;genre: varchar, not NULL<br>
+    ○ Attributes<br>
+      ■ songId: int, Primary Key, auto_increment, not NULL<br>
+      ■ songName: varchar, not NULL<br>
+      ■ albumId: int, not NULL, Foreign Key<br>
+      ■ artistId: int, not NULL, Foreign Key<br>
+      ■ genre: varchar, not NULL<br>
       ■ songLength: time, NOT NULL<br>
       ■ totalStreams: int, not NULL
     ○ Relationships
