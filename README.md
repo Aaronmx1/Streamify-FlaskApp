@@ -5,7 +5,7 @@ Music Streaming frontend and backend handled in Python/Flask<br>
 
 Streamify Music Streaming Service/Database<br>
 
-**Overview**<br>
+**A. Overview**<br>
 Our system, Streamify, aims to provide a streamlined database-driven platform that allows administrators to manage essential components of a music streaming service.<br>
 Streamify would serve as an internal tool for managing artists, albums, songs, and user-generated playlists, ensuring that music libraries are organized efficiently.<br>
 The system will allow administrators to:<br>
@@ -82,3 +82,4 @@ With this reliable back-end database, Streamify will ensure accurate tracking of
     - A M:1 relationship exists between LikedSongs and Users.<br>
 
 **C. Entity Relationship Diagram:**<br>
+![MusicSchema](https://github.com/user-attachments/assets/7e06d868-5eab-46c1-b5a3-2739dd51c1ff)
