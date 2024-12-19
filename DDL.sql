@@ -26,7 +26,7 @@ CREATE TABLE Artists (
     lName varchar(50) NOT NULL,
     email varchar(50) NOT NULL,
     PRIMARY KEY (artistId)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+);
 
 -- Users table which contains company user base
 CREATE TABLE Users (
@@ -36,7 +36,7 @@ CREATE TABLE Users (
     email varchar(50) NOT NULL UNIQUE,
     dob date NOT NULL,
     PRIMARY KEY (userId)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+);
 
 -- Albums table which contains collections of songs from artists
 CREATE TABLE Albums (
@@ -50,7 +50,7 @@ CREATE TABLE Albums (
     CONSTRAINT FOREIGN KEY (artistId) REFERENCES Artists (artistId)
         ON UPDATE CASCADE
         ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+);
 
 -- Songs table contains artist created songs
 CREATE TABLE Songs (
@@ -68,7 +68,7 @@ CREATE TABLE Songs (
     CONSTRAINT FOREIGN KEY (artistId) REFERENCES Artists (artistId)
         ON UPDATE CASCADE
         ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+);
 
 -- Handles M:N relationship between Users and Songs
 CREATE TABLE LikedSongs (
@@ -82,7 +82,7 @@ CREATE TABLE LikedSongs (
     CONSTRAINT FOREIGN KEY (userId) REFERENCES Users (userId)
         ON UPDATE CASCADE
         ON DELETE CASCADE 
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+);
 
 
 /*-------------------------------------------
@@ -97,15 +97,15 @@ INSERT INTO Users (
     email,
     dob
 ) VALUES (
-    'Tim',
-    'Newell',
-    'tnewell@gmail.com',
-    '2023-03-04'
-),
-(
     'Aaron',
     'Martinez',
     'amartinez@gmail.com',
+    '2023-03-04'
+),
+(
+    'Jeff',
+    'Bezos',
+    'jbezos@gmail.com',
     '2023-05-06'
 ),
 (
