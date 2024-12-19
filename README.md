@@ -11,12 +11,18 @@ platform that allows administrators to manage essential components of a
 music streaming service.
 Streamify would serve as an internal tool for managing artists, albums,
 songs, and user-generated playlists, ensuring that music libraries are
-organized efficiently. The system will allow administrators to:
+organized efficiently. 
+The system will allow administrators to:
+
   ● Add and manage new songs, albums, and artists.
+  
   ● Monitor the total number of streams for each artist and track.
+  
   ● Organize songs into user-created playlists.
+  
   ● Allow users to create profiles and subscribe to different subscription
     tiers.
+    
   ● Allow users to keep track of songs that they like
 
 The platform will manage millions of tracks from thousands of artists as well
