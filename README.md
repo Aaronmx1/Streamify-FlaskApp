@@ -37,18 +37,15 @@ experience for both administrators and users.
 
 **Entities**
 
-  ● Songs: This table stores information about individual songs
-    ○ Attributes
-      ■ songId: int, Primary Key, auto_increment, not NULL
-      ■ songName: varchar, not NULL
-      ■ albumId: int, not NULL, Foreign Key
-      ■ artistId: int, not NULL, Foreign Key
-      ■ genre: varchar, not NULL
-      
-      ■ songLength: time, NOT NULL
-      
+  ● Songs: This table stores information about individual songs <br>
+    ○ Attributes<br>
+      ■ songId: int, Primary Key, auto_increment, not NULL<br>
+      ■ songName: varchar, not NULL<br>
+      ■ albumId: int, not NULL, Foreign Key<br>
+      ■ artistId: int, not NULL, Foreign Key<br>
+      ■ genre: varchar, not NULL<br>
+      ■ songLength: time, NOT NULL<br>
       ■ totalStreams: int, not NULL
-      
     ○ Relationships
       ■ A M:1 relationship exists between Songs and Albums.
       albumId in Songs references the Albums table.
