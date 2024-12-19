@@ -1,5 +1,5 @@
-# FlaskApp
-Hosting MySQL database using Flask<br>
+# Streamify - FlaskApp
+Hosting MySQL database using Flask and Jinja<br>
 
 Music Streaming frontend and backend handled in Python/Flask<br>
 
