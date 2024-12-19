@@ -1,18 +1,5 @@
 /* 
- Streamify: Creation of Music Streaming Service backend tables
- Team 34
- Project Team:
-    - Aaron Martinez
-    - Tim Newell
-
-Steps to run file:
-    1. Save this file to directory
-    2. Open terminal in that directory
-    3. Type the following commands:
-        a. mysql -u cs340_[ONID] -h classmysql.engr.oregonstate.edu -p
-        b. * enter password when prompted *
-        c. use cs340_[ONID];
-        d. source DDL.SQL;
+Streamify: Creation of Music Streaming Service backend tables
 */
 
 -- Disable commits and foreign key checks to minimize import errors.  These are set back at the end of DDL import.
